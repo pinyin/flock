@@ -11,8 +11,18 @@ import 'package:flock/flock.dart';
 
 // Events
 class E {}
-class EA extends E {}
-class EB extends E {}
+
+class EA extends E {
+  EA(this.value);
+
+  final String value;
+}
+
+class EB extends E {
+  EB(this.v);
+
+  final int v;
+}
 
 // EventStore
 final eventStore = createEventStore<E>();
