@@ -33,7 +33,6 @@ final projector = (int prev, EventStack<E> events, Projectable<E> store) {
   var result = prev ?? 0;
    // notice the events are in reverse chronological order
   for (var event in events) {
-    projectCount++;
     if (event is EB)
       result += event.v;
     else if (event is EA)

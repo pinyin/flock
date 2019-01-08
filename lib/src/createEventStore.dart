@@ -2,6 +2,7 @@ import './EventStorage.dart';
 import './EventStore.dart';
 import './Projections.dart';
 
+/// Create a Flock [EventStore].
 EventStore<E> createEventStore<E>(
     [List<E> prepublish = const [],
     List<Middleware<E>> middleware = const []]) {

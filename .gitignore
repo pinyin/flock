@@ -10,8 +10,9 @@ ios/Flutter/Generated.xcconfig
 ios/Runner/GeneratedPluginRegistrant.*
 
 .idea/
-*.iml
 .vscode/
 
-android/
-ios/
+/android/
+/ios/
+
+local.properties
