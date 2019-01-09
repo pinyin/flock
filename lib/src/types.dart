@@ -2,16 +2,17 @@
 
 /// An [Store] records all events happened in app and acts as the single source of truth.
 /// Use [createStore] function to create an event store.
-abstract class Store<E> extends ReadonlyStore<E> {
+abstract class Store<E> extends Projectable<E> with _Subscribable<E> {
   void publish(E event);
+}
 
+/// [Store] for middleware.
+/// We don't want our events get replaced by widgets.
+abstract class InnerStore<E> extends Store<E> {
   void replaceEvents(List<E> E);
 }
 
-/// Read from [Store]
-abstract class ReadonlyStore<E> extends Projectable<E> with _Subscribable<E> {}
-
-/// [Store] only has events, which is not friendly for widgets to read.
+/// Read from store.
 /// Widgets use [Projector] to extract information from store.
 abstract class Projectable<E> {
   P projectWith<P>(Projector<E, P> projector);
@@ -33,7 +34,7 @@ typedef Subscriber<E> = Function(E event);
 typedef Unsubscribe = void Function();
 
 /// Store creator for middleware.
-typedef CreateStore<E> = Store<E> Function(List<E> prepublish);
+typedef CreateStore<E> = InnerStore<E> Function(List<E> prepublish);
 
 /// [Middleware] are called "store enhancer" in Redux.
 /// They wrap store and enable features like time travel.

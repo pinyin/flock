@@ -74,7 +74,7 @@ void main() {
     });
     test('should clean projection cache after events got replaced', () {
       final before = projectCount;
-      store.replaceEvents([]);
+      (store as InnerStore<E>).replaceEvents([]);
       store.projectWith(projector);
       expect(projectCount, before);
       store.publish(EA('1'));

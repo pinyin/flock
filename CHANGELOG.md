@@ -17,3 +17,7 @@
 ## [0.0.5] - 2019/1/9
 
 * Rename `EventStore` to `Store`
+
+## [0.0.6] - 2019/1/9
+
+* Hide `Store#replaceEvents` from user

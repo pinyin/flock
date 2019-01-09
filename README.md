@@ -1,6 +1,8 @@
 # flock
 
-Coordinate Flutter widgets&#x27; states with event sourcing.
+[![Build Status](https://travis-ci.com/pinyin/flock.svg?branch=master)](https://travis-ci.com/pinyin/flock)
+
+Coordinate Flutter widgets' states with event sourcing.
 
 Inspired by [Redux](https://github.com/reduxjs/redux/).
 

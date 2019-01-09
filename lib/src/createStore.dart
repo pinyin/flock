@@ -12,7 +12,7 @@ Store<E> createStore<E>([List<E> prepublish = const [],
   return createStore(prepublish);
 }
 
-class _EventStoreImpl<E> implements Store<E> {
+class _EventStoreImpl<E> implements InnerStore<E> {
   _EventStoreImpl(List<E> prepublish) {
     this._storage.replaceEvents(prepublish);
   }
