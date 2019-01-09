@@ -1,19 +1,25 @@
-import './EventStorage.dart';
-import './EventStore.dart';
-import './Projections.dart';
+import 'package:flock/src/types.dart';
 
-/// Create a Flock [EventStore].
-EventStore<E> createEventStore<E>(
-    [List<E> prepublish = const [],
-    List<Middleware<E>> middleware = const []]) {
+import './EventStorage.dart';
+import './Projections.dart';
+import './types.dart';
+
+/// Create a Flock [Store].
+Store<E> createEventStore<E>([List<E> prepublish = const [],
+  List<Middleware<E>> middleware = const []]) {
   final createStore = middleware.fold<CreateStore<E>>(
-      (List<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
+          (List<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
   return createStore(prepublish);
 }
 
-class _EventStoreImpl<E> implements EventStore<E> {
+class _EventStoreImpl<E> implements Store<E> {
   _EventStoreImpl(List<E> prepublish) {
     this._storage.replaceEvents(prepublish);
+  }
+
+  @override
+  P get<P>(Projector<E, P> projector) {
+    return projectWith(projector);
   }
 
   @override

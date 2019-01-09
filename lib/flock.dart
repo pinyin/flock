@@ -1,4 +1,4 @@
 library flock;
 
-export './src/EventStore.dart';
-export './src/createEventStore.dart';
+export './src/createStore.dart';
+export './src/types.dart';

@@ -1,5 +1,5 @@
 import './EventStackImpl.dart';
-import './EventStore.dart';
+import './types.dart';
 
 class EventStorage<E> {
   EventStorage();

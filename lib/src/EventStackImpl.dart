@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import './EventStore.dart';
+import './types.dart';
 
 class EventStackImpl<E> extends IterableMixin<E> implements EventStack<E> {
   EventStackImpl(this._events, this._upTo);

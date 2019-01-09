@@ -26,22 +26,22 @@ void main() {
   });
 
   group('flock', () {
-    final EventStore<E> eventStore = createEventStore<E>();
+    final Store<E> store = createEventStore<E>();
     test('should return a valid EventStore', () {
-      expect(eventStore, TypeMatcher<EventStore<E>>());
+      expect(store, TypeMatcher<Store<E>>());
     });
     test('should dispatch event to subscriber', () {
       var value = 0;
-      final unsubscribe = eventStore.subscribe((e) {
+      final unsubscribe = store.subscribe((e) {
         if (e is EB) {
           value += e.v;
         }
       });
 
-      eventStore.publish(EA('1'));
-      eventStore.publish(EA('2'));
-      eventStore.publish(EB(3));
-      eventStore.publish(EB(4));
+      store.publish(EA('1'));
+      store.publish(EA('2'));
+      store.publish(EB(3));
+      store.publish(EB(4));
 
       unsubscribe();
       expect(value, 7);
@@ -59,24 +59,26 @@ void main() {
     };
 
     test('should support projection', () {
-      final projection = eventStore.projectWith(projector);
+      var projection = store.projectWith(projector);
+      expect(projection, 4);
+      projection = store.get(projector);
       expect(projection, 4);
     });
     test('should cache projection result for the same projector', () {
       final before = projectCount;
-      eventStore.projectWith(projector);
+      store.projectWith(projector);
       expect(projectCount, before);
-      eventStore.publish(EA('1'));
-      eventStore.projectWith(projector);
+      store.publish(EA('1'));
+      store.projectWith(projector);
       expect(projectCount, before + 1);
     });
     test('should clean projection cache after events got replaced', () {
       final before = projectCount;
-      eventStore.replaceEvents([]);
-      eventStore.projectWith(projector);
+      store.replaceEvents([]);
+      store.projectWith(projector);
       expect(projectCount, before);
-      eventStore.publish(EA('1'));
-      final result = eventStore.projectWith(projector);
+      store.publish(EA('1'));
+      final result = store.projectWith(projector);
       expect(projectCount, before + 1);
       expect(result, -1);
     });

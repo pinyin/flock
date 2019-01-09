@@ -1,6 +1,6 @@
 name: flock
 description: Coordinate Flutter widgets' states with event sourcing.
-version: 0.0.3
+version: 0.0.4
 author: Bo Bao <bob432091@gmail.com>
 homepage: https://github.com/pinyin/flock
 

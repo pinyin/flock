@@ -1,4 +1,4 @@
-import './EventStore.dart';
+import './types.dart';
 
 class Projections<E> {
   void set<P>(Projector<E, P> projector, int cursor, P projection) {

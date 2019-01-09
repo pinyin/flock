@@ -24,8 +24,8 @@ class EB extends E {
   final int v;
 }
 
-// EventStore
-final eventStore = createEventStore<E>();
+// Store
+final store = createStore<E>();
 
 // Your projector
 
@@ -43,8 +43,10 @@ final projector = (int prev, EventStack<E> events, Projectable<E> store) {
 
 // In you widget:
 
-eventStore.subscribe((E e){
-  final projection = eventStore.projectWith(projector);
+store.subscribe((E e){
+  final projection = store.projectWith(projector);
+  // or
+  final projection = store.get(projector);
   // update your state
 });
 

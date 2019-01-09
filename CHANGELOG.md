@@ -9,3 +9,8 @@
 ## [0.0.3] - 2019/1/8
 
 * Add basic documents to public interface.
+
+## [0.0.4] - 2019/1/9
+
+* Rename `EventStore` to `Store`
+* Add `Store#get` as a shorthand of `Store#projectWith`
