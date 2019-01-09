@@ -26,7 +26,7 @@ void main() {
   });
 
   group('flock', () {
-    final Store<E> store = createEventStore<E>();
+    final Store<E> store = createStore<E>();
     test('should return a valid EventStore', () {
       expect(store, TypeMatcher<Store<E>>());
     });

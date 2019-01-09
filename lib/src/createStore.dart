@@ -5,7 +5,7 @@ import './Projections.dart';
 import './types.dart';
 
 /// Create a Flock [Store].
-Store<E> createEventStore<E>([List<E> prepublish = const [],
+Store<E> createStore<E>([List<E> prepublish = const [],
   List<Middleware<E>> middleware = const []]) {
   final createStore = middleware.fold<CreateStore<E>>(
           (List<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));

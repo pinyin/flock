@@ -12,5 +12,8 @@
 
 ## [0.0.4] - 2019/1/9
 
-* Rename `EventStore` to `Store`
 * Add `Store#get` as a shorthand of `Store#projectWith`
+
+## [0.0.5] - 2019/1/9
+
+* Rename `EventStore` to `Store`
