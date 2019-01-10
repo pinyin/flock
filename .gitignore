@@ -16,3 +16,4 @@ ios/Runner/GeneratedPluginRegistrant.*
 /ios/
 
 local.properties
+.flutter-plugins

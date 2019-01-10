@@ -5,26 +5,20 @@ import './Projections.dart';
 import './types.dart';
 
 /// Create a Flock [Store].
-Store<E> createStore<E>(
-    [List<E> prepublish = const [],
-    List<Middleware<E>> middleware = const []]) {
+InnerStore<E> createStore<E>([Iterable<E> prepublish = const [],
+  Iterable<Middleware<E>> middleware = const []]) {
   final createStore = middleware.fold<CreateStore<E>>(
-      (List<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
+          (Iterable<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
   return createStore(prepublish);
 }
 
 class _EventStoreImpl<E> implements InnerStore<E> {
-  _EventStoreImpl(List<E> prepublish) {
+  _EventStoreImpl(Iterable<E> prepublish) {
     this._storage.replaceEvents(prepublish);
   }
 
   @override
-  P get<P>(Projector<E, P> projector) {
-    return projectWith(projector);
-  }
-
-  @override
-  P projectWith<P>(Projector<E, P> projector) {
+  P getState<P>(Projector<E, P> projector) {
     final cached = _projections.get<P>(projector);
     if (cached?.cursor == _storage.cursor) return cached.projection;
     final projection = cached != null && cached.cursor < _storage.cursor
@@ -35,9 +29,9 @@ class _EventStoreImpl<E> implements InnerStore<E> {
   }
 
   @override
-  E publish(E event) {
+  E dispatch(E event) {
     _storage.publish(event);
-    _listeners.forEach((listener) => listener(event));
+    _listeners.forEach((listener) => listener()); // TODO catch errors
     return null;
   }
 

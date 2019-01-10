@@ -14,10 +14,6 @@ abstract class StoreState<W extends StoreWidget<E>, E> extends State<W> {
     _unsubscribe = widget.store.subscribe(_storeUpdated);
   }
 
-  bool shouldUpdateOn(E e) {
-    return true;
-  }
-
   Unsubscribe _unsubscribe;
 
   @override
@@ -35,9 +31,7 @@ abstract class StoreState<W extends StoreWidget<E>, E> extends State<W> {
     _unsubscribe();
   }
 
-  void _storeUpdated(E e) {
-    if (shouldUpdateOn(e)) {
-      setState(() {});
-    }
+  void _storeUpdated() {
+    setState(() {});
   }
 }

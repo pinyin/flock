@@ -11,13 +11,13 @@ void main() {
     test('should be empty in the beginning', () {
       expect(storage.cursor, 0);
     });
-    test('should be able to accept published events', () {
+    test('should be able to accept dispatched events', () {
       storage.publish(EP(0));
       storage.publish(EP(1));
       expect(storage.readUpTo(0).last.v, 0);
       expect(storage.readUpTo(0).first.v, 1);
     });
-    test('should increase cursor after publish', () {
+    test('should increase cursor after dispatch', () {
       expect(storage.cursor, 2);
     });
     test('should support cleanup events', () {
@@ -33,42 +33,38 @@ void main() {
     });
     test('should dispatch event to subscriber', () {
       var value = 0;
-      final unsubscribe = s.subscribe((e) {
-        if (e is EP) {
-          value += e.v;
-        }
+      final unsubscribe = s.subscribe(() {
+        value += 1;
       });
 
-      s.publish(EM('1'));
-      s.publish(EM('2'));
-      s.publish(EP(3));
-      s.publish(EP(4));
+      s.dispatch(EM('1'));
+      s.dispatch(EM('2'));
+      s.dispatch(EP(3));
+      s.dispatch(EP(4));
 
       unsubscribe();
-      expect(value, 7);
+      expect(value, 4);
     });
 
     test('should support projection', () {
-      var projection = s.projectWith(p);
-      expect(projection, 4);
-      projection = s.get(p);
+      var projection = s.getState(p);
       expect(projection, 4);
     });
     test('should cache projection result for the same p', () {
       final before = projectCount;
-      s.projectWith(p);
+      s.getState(p);
       expect(projectCount, before);
-      s.publish(EM('1'));
-      s.projectWith(p);
+      s.dispatch(EM('1'));
+      s.getState(p);
       expect(projectCount, before + 1);
     });
     test('should clean projection cache after events got replaced', () {
       final before = projectCount;
       (s as InnerStore<E>).replaceEvents([]);
-      s.projectWith(p);
+      s.getState(p);
       expect(projectCount, before);
-      s.publish(EM('1'));
-      final result = s.projectWith(p);
+      s.dispatch(EM('1'));
+      final result = s.getState(p);
       expect(projectCount, before + 1);
       expect(result, -1);
     });
@@ -87,10 +83,18 @@ void main() {
       final updatedTester = find.text('0');
       expect(initialTester, findsOneWidget);
       expect(updatedTester, findsNothing);
-      s.publish(EP(1));
+      s.dispatch(EP(1));
       await tester.pump();
       expect(initialTester, findsNothing);
       expect(updatedTester, findsOneWidget);
+    });
+
+    testWidgets('should support builder pattern', (WidgetTester tester) async {
+      await tester.pumpWidget(BW());
+      expect(find.text('0'), findsOneWidget);
+      s.dispatch(EP(1));
+      await tester.pump();
+      expect(find.text('1'), findsOneWidget);
     });
   });
 }
@@ -137,7 +141,7 @@ class S extends StoreState<W, E> {
   @override
   Widget build(BuildContext context) {
     return Text(
-      '${widget.store.get(p)}',
+      '${widget.store.getState(p)}',
       textDirection: TextDirection.ltr,
     );
   }
@@ -145,5 +149,20 @@ class S extends StoreState<W, E> {
   @override
   void setState(fn) {
     super.setState(fn);
+  }
+}
+
+class BW extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StoreBuilder(
+      build: (BuildContext context, int p) =>
+          Text(
+            '$p',
+            textDirection: TextDirection.ltr,
+          ),
+      store: s,
+      projector: p,
+    );
   }
 }

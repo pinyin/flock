@@ -25,3 +25,9 @@
 ## [0.0.7] - 2019/1/9
 
 * Add basic Flutter integration.
+
+## [0.0.8] - 2019/1/10
+
+* Update interface to match Redux better.
+* Add ShakeBack enhancer.
+* Add StoreBuilder interface.

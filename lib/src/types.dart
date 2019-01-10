@@ -3,24 +3,22 @@
 /// An [Store] records all events happened in app and acts as the single source of truth.
 /// Use [createStore] function to create an event store.
 abstract class Store<E> extends Projectable<E> with _Subscribable<E> {
-  void publish(E event);
+  void dispatch(E event);
 }
 
-/// [Store] for middleware.
+/// [Store] for extension.
 /// We don't want our events get replaced by widgets.
 abstract class InnerStore<E> extends Store<E> {
-  void replaceEvents(List<E> E);
+  void replaceEvents(Iterable<E> events);
 }
 
 /// Read from store.
 /// Widgets use [Projector] to extract information from store.
 abstract class Projectable<E> {
-  P projectWith<P>(Projector<E, P> projector);
-
   /// Shorthand for projectWith
   /// Too bad we can't use operator overloading here
   /// https://github.com/dart-lang/sdk/issues/300480
-  P get<P>(Projector<E, P> projector);
+  P getState<P>(Projector<E, P> projector);
 }
 
 abstract class _Subscribable<E> {
@@ -28,13 +26,13 @@ abstract class _Subscribable<E> {
 }
 
 /// Callback when [Store] is updated.
-typedef Subscriber<E> = Function(E event);
+typedef Subscriber<E> = Function();
 
 /// Stop receiving events
-typedef Unsubscribe = void Function();
+typedef Unsubscribe = Function();
 
 /// Store creator for middleware.
-typedef CreateStore<E> = InnerStore<E> Function(List<E> prepublish);
+typedef CreateStore<E> = InnerStore<E> Function(Iterable<E> prepublish);
 
 /// [Middleware] are called "store enhancer" in Redux.
 /// They wrap store and enable features like time travel.

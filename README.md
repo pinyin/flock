@@ -45,12 +45,29 @@ final projector = (int prev, EventStack<E> events, Projectable<E> store) {
 
 // In you widget:
 
+store.dispatch(EB(1));
+
 store.subscribe((E e){
-  final projection = store.projectWith(projector);
-  // or
-  final projection = store.get(projector);
-  // update your state
+  final projection = store.getState(projector);
+  // projection will be 1
 });
+
+//or
+
+class BW extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StoreBuilder( 
+      build: (BuildContext context, int p) => Text(
+            '$p',
+            textDirection: TextDirection.ltr,
+          ),
+      store: store, // receive store from wherever you like
+      projector: projector, // you can also write projector as a method of this widget
+    );
+  }
+}
+
 
 ```
 
