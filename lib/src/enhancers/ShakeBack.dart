@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flock/flock.dart';
-import 'package:flock/src/types.dart';
+import 'package:flock/src/base/types.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sensors/sensors.dart';
 

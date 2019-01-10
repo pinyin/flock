@@ -1,6 +1,5 @@
 import 'package:flock/flock.dart';
-import 'package:flock/src/EventStorage.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flock/src/base/EventStorage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:matcher/matcher.dart' as Matcher;

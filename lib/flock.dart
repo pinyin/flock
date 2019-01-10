@@ -1,7 +1,7 @@
 library flock;
 
-export './enhancers/ShakeBack.dart';
-export './integration/StoreBuilder.dart';
-export './integration/StoreWidget.dart';
-export './src/createStore.dart';
-export './src/types.dart';
+export './src/base/createStore.dart';
+export './src/base/types.dart';
+export './src/enhancers/ShakeBack.dart';
+export './src/integration/StoreBuilder.dart';
+export './src/integration/StoreWidget.dart';

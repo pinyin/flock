@@ -1,8 +1,6 @@
-import 'package:flock/src/types.dart';
-
-import './EventStorage.dart';
-import './Projections.dart';
-import './types.dart';
+import 'package:flock/src/base/EventStorage.dart';
+import 'package:flock/src/base/Projections.dart';
+import 'package:flock/src/base/types.dart';
 
 /// Create a Flock [Store].
 InnerStore<E> createStore<E>([Iterable<E> prepublish = const [],

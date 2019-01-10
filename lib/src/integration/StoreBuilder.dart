@@ -1,4 +1,5 @@
 import 'package:flock/flock.dart';
+import 'package:flock/src/integration/StoreWidget.dart';
 import 'package:flutter/widgets.dart';
 
 class StoreBuilder<E, P> extends StoreWidget<E> {

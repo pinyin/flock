@@ -1,5 +1,5 @@
-import './EventStackImpl.dart';
-import './types.dart';
+import 'package:flock/src/base/EventStackImpl.dart';
+import 'package:flock/src/base/types.dart';
 
 class EventStorage<E> {
   EventStorage();

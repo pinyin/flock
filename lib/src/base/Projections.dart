@@ -1,4 +1,4 @@
-import './types.dart';
+import 'package:flock/src/base/types.dart';
 
 class Projections<E> {
   void set<P>(Projector<E, P> projector, int cursor, P projection) {
