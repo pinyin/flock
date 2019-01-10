@@ -36,3 +36,8 @@
 
 # Rename `build` in StoreBuilder's params to `builder`
 # Eliminate rebuilds caused by StoreBuilder
+
+## [0.0.10]
+
+# Add description
+# Rename `ShakeBack` API

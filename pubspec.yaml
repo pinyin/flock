@@ -1,6 +1,10 @@
 name: flock
-description: Coordinate Flutter widgets' states with event sourcing.
-version: 0.0.9
+description:
+  |
+  Coordinate Flutter widgets' states with event sourcing.
+  Redux uses actions, but the single source of truth(SSoT) in a typical Redux application is still in the state, not actions.
+  What would happen if our Redux store has no reducers, no state but only actions?
+version: 0.0.10
 author: Bo Bao <bob432091@gmail.com>
 homepage: https://github.com/pinyin/flock
 
@@ -10,14 +14,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  sensors: ^0.3.5
   rxdart: ^0.20.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   matcher: ^0.12.3
-
+  sensors: ^0.3.5
 
 
 # For information on the generic Dart part of this file, see the

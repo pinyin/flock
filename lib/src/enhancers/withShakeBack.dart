@@ -6,25 +6,16 @@ import 'package:rxdart/rxdart.dart';
 import 'package:sensors/sensors.dart';
 
 /// Shake your device to go back to previous state
-// TODO how to test this?
-class ShakeBack<E> {
-  final subscription = CompositeSubscription();
-
-  CreateStore<E> middleware<E>(CreateStore<E> inner) {
-    return (Iterable<E> prepublish) =>
-        _ShakeBackStore(inner(prepublish), subscription);
-  }
-
-  void dispose() {
-    this.subscription.dispose();
-  }
+StoreEnhancer<E> withShakeBack<E>(Stream<UserAccelerometerEvent> accEvents) {
+  return (StoreCreator<E> inner) =>
+      (Iterable<E> prepublish) => _ShakeBackStore(inner(prepublish));
 }
 
 class _ShakeBackStore<E> extends InnerStore<E> {
-  _ShakeBackStore(this._inner, this.cleanup) {
-    cleanup.add(_isShaking$().where((e) => e).listen((e) {
+  _ShakeBackStore(this._inner) {
+    _isShaking$().where((e) => e).listen((e) {
       _back();
-    }));
+    });
   }
 
   InnerStore<E> _inner;

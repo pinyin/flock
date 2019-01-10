@@ -75,7 +75,7 @@ packages:
     source: hosted
     version: "0.20.0"
   sensors:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: sensors
       url: "https://pub.dartlang.org"

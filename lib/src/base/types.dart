@@ -6,8 +6,8 @@ abstract class Store<E> extends Projectable<E> with _Subscribable<E> {
   void dispatch(E event);
 }
 
-/// [Store] for extension.
-/// We don't want our events get replaced by widgets.
+/// [Store] for store enhancers.
+/// We don't want our events to get replaced accidentally in widgets.
 abstract class InnerStore<E> extends Store<E> {
   void replaceEvents(Iterable<E> events);
 }
@@ -32,11 +32,11 @@ typedef Subscriber<E> = Function();
 typedef Unsubscribe = Function();
 
 /// Store creator for middleware.
-typedef CreateStore<E> = InnerStore<E> Function(Iterable<E> prepublish);
+typedef StoreCreator<E> = InnerStore<E> Function(Iterable<E> prepublish);
 
-/// [Middleware] are called "store enhancer" in Redux.
+/// [StoreEnhancer] are called "store enhancer" in Redux.
 /// They wrap store and enable features like time travel.
-typedef Middleware<E> = CreateStore<E> Function(CreateStore<E> inner);
+typedef StoreEnhancer<E> = StoreCreator<E> Function(StoreCreator<E> inner);
 
 /// A [Projector] is a view derived from events.
 typedef Projector<E, P> = P Function(
