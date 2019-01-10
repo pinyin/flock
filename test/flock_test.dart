@@ -95,6 +95,21 @@ void main() {
       await tester.pump();
       expect(find.text('1'), findsOneWidget);
     });
+
+    testWidgets('should not rebuild widgets unless projection changed',
+            (WidgetTester tester) async {
+          await tester.pumpWidget(BW());
+          var buildCount = bwBuildCount;
+          s.dispatch(EP(0));
+          await tester.pump();
+          expect(bwBuildCount, buildCount);
+          s.dispatch(EP(1));
+          await tester.pump();
+          expect(bwBuildCount, buildCount + 1);
+          s.dispatch(EP(0));
+          await tester.pump();
+          expect(bwBuildCount, buildCount + 1);
+        });
   });
 }
 
@@ -144,22 +159,21 @@ class S extends StoreState<W, E> {
       textDirection: TextDirection.ltr,
     );
   }
-
-  @override
-  void setState(fn) {
-    super.setState(fn);
-  }
 }
+
+var bwBuildCount = 0;
 
 class BW extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreBuilder(
-      build: (BuildContext context, int p) =>
-          Text(
-            '$p',
-            textDirection: TextDirection.ltr,
-          ),
+      builder: (BuildContext context, int p) {
+        bwBuildCount++;
+        return Text(
+          '$p',
+          textDirection: TextDirection.ltr,
+        );
+      },
       store: s,
       projector: p,
     );

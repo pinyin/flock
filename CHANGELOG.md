@@ -31,3 +31,8 @@
 * Update interface to match Redux better.
 * Add ShakeBack enhancer.
 * Add StoreBuilder interface.
+
+## [0.0.9]
+
+# Rename `build` in StoreBuilder's params to `builder`
+# Eliminate rebuilds caused by StoreBuilder

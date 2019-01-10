@@ -63,7 +63,7 @@ class BW extends StatelessWidget {
             textDirection: TextDirection.ltr,
           ),
       store: store, // receive store from wherever you like
-      projector: projector, // you can also write projector as a method of this widget
+      projector: projector, // you can also provide a method as projector
     );
   }
 }
