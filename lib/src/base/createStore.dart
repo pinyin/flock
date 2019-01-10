@@ -3,10 +3,11 @@ import 'package:flock/src/base/Projections.dart';
 import 'package:flock/src/base/types.dart';
 
 /// Create a Flock [Store].
-InnerStore<E> createStore<E>([Iterable<E> prepublish = const [],
-  Iterable<StoreEnhancer<E>> enhancers = const []]) {
+InnerStore<E> createStore<E>(
+    [Iterable<E> prepublish = const [],
+    Iterable<StoreEnhancer<E>> enhancers = const []]) {
   final createStore = enhancers.fold<StoreCreator<E>>(
-          (Iterable<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
+      (Iterable<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
   return createStore(prepublish);
 }
 

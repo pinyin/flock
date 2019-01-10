@@ -42,7 +42,7 @@ class _ShakeBackStore<E> extends InnerStore<E> {
   }
 
   void _back() {
-    if (_events.length < 1) return;
+    if (_events.length <= 0) return;
     _events.removeLast();
     _inner.replaceEvents(_events);
     _listeners.forEach((l) => l());
