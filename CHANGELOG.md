@@ -34,15 +34,21 @@
 
 ## [0.0.9]
 
-# Rename `build` in StoreBuilder's params to `builder`
-# Eliminate rebuilds caused by StoreBuilder
+* Rename `build` in StoreBuilder's params to `builder`
+* Eliminate rebuilds caused by StoreBuilder
 
 ## [0.0.10]
 
-# Add description
-# Rename `ShakeBack` API
+* Add description
+* Rename `ShakeBack` API
 
 ## [0.0.11]
 
-# Add example
-# Update description
+* Add example
+* Update description
+
+## [0.0.12]
+
+* Rename `StoreWidget` interface
+* Remove `Projectable` from signature of `Projector`
+* Remove `EventStack`, using chronological `List` instead

@@ -60,8 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
     widget.store.dispatch(Increase());
   }
 
-  int counter(
-      int prev, EventStack<AppEvent> events, Projectable<AppEvent> store) {
+  int counter(int prev, Events<AppEvent> events) {
     var next = prev ?? 0;
     for (final event in events) {
       if (event is Increase) next++;

@@ -2,8 +2,8 @@ name: flock
 description:
   |
   Coordinate Flutter widgets' states with event sourcing.
-  What would happen if our Redux store has no reducers, no state but only actions?
-version: 0.0.11
+    What if Redux store contains no reducers, no state but only actions?
+version: 0.0.12
 author: Bo Bao <bob432091@gmail.com>
 homepage: https://github.com/pinyin/flock
 

@@ -13,8 +13,28 @@ void main() {
     test('should be able to accept dispatched events', () {
       storage.publish(EP(0));
       storage.publish(EP(1));
-      expect(storage.readUpTo(0).last.v, 0);
-      expect(storage.readUpTo(0).first.v, 1);
+      expect(storage
+          .readSince(0)
+          .first
+          .v, 0);
+      expect(storage
+          .readSince(0)
+          .last
+          .v, 1);
+      expect(storage
+          .readSince(0)
+          .reversed
+          .first
+          .v, 1);
+      expect(storage
+          .readSince(0)
+          .reversed
+          .last
+          .v, 0);
+      expect(storage
+          .readSince(1)
+          .first
+          .v, 1);
     });
     test('should increase cursor after dispatch', () {
       expect(storage.cursor, 2);
@@ -22,7 +42,9 @@ void main() {
     test('should support cleanup events', () {
       storage.replaceEvents([]);
       expect(storage.cursor, 0);
-      expect(storage.readUpTo(0).isEmpty, true);
+      expect(storage
+          .readSince(0)
+          .isEmpty, true);
     });
   });
 
@@ -69,26 +91,49 @@ void main() {
     });
   });
 
-  group('Flutter integration', () {
-    testWidgets('should show initial state', (WidgetTester tester) async {
-      await tester.pumpWidget(W());
-      final initialTester = find.text('-1');
-      expect(initialTester, findsOneWidget);
+  group('Flutter State integration', () {
+    testWidgets('should create projection on build',
+            (WidgetTester tester) async {
+          s.dispatch(EQ(0));
+          await tester.pumpWidget(B());
+          expect(find.text('0'), findsOneWidget);
+        });
+
+    testWidgets('should update widget with store', (WidgetTester tester) async {
+      s.dispatch(EQ(0));
+      await tester.pumpWidget(B());
+      expect(find.text('0'), findsOneWidget);
+      s.dispatch(EP(1));
+      await tester.pump();
+      expect(find.text('1'), findsOneWidget);
+    });
+
+    testWidgets('should not rebuild widgets unless projection is changed',
+            (WidgetTester tester) async {
+          await tester.pumpWidget(B());
+          var buildCount = bBuildCount;
+          s.dispatch(EP(0));
+          await tester.pump();
+          expect(bBuildCount, buildCount);
+          s.dispatch(EP(1));
+          await tester.pump();
+          expect(bBuildCount, buildCount + 1);
+          s.dispatch(EP(0));
+          await tester.pump();
+          expect(bBuildCount, buildCount + 1);
+        });
+  });
+
+  group('Flutter Builder integration', () {
+    testWidgets('should create projection on build',
+            (WidgetTester tester) async {
+          s.dispatch(EQ(0));
+          await tester.pumpWidget(BW());
+          expect(find.text('0'), findsOneWidget);
     });
 
     testWidgets('should update widget with store', (WidgetTester tester) async {
-      await tester.pumpWidget(W());
-      final initialTester = find.text('-1');
-      final updatedTester = find.text('0');
-      expect(initialTester, findsOneWidget);
-      expect(updatedTester, findsNothing);
-      s.dispatch(EP(1));
-      await tester.pump();
-      expect(initialTester, findsNothing);
-      expect(updatedTester, findsOneWidget);
-    });
-
-    testWidgets('should support builder pattern', (WidgetTester tester) async {
+      s.dispatch(EQ(0));
       await tester.pumpWidget(BW());
       expect(find.text('0'), findsOneWidget);
       s.dispatch(EP(1));
@@ -96,7 +141,7 @@ void main() {
       expect(find.text('1'), findsOneWidget);
     });
 
-    testWidgets('should not rebuild widgets unless projection changed',
+    testWidgets('should not rebuild widgets unless projection is changed',
             (WidgetTester tester) async {
           await tester.pumpWidget(BW());
           var buildCount = bwBuildCount;
@@ -127,37 +172,53 @@ class EP extends E {
   final int v;
 }
 
+class EQ extends E {
+  EQ(this.v);
+
+  final int v;
+}
+
 final Store<E> s = createStore<E>();
 
 var projectCount = 0;
 
-int p(int prev, EventStack<E> events, Projectable<E> store) {
+int p(int prev, Events<E> events) {
   var result = prev ?? 0;
+  debugPrint(events.toString());
   for (var event in events) {
     projectCount++;
     if (event is EP)
       result += event.v;
-    else if (event is EM) result -= int.tryParse(event.value) ?? 0;
+    else if (event is EM)
+      result -= int.tryParse(event.value) ?? 0;
+    else if (event is EQ) {
+      result = event.v;
+    }
   }
   return result;
 }
 
-class W extends StoreWidget<E> {
-  final Store<E> store = s;
+var bBuildCount = 0;
+
+class B extends StoreWidget<E> {
+  final store = s;
 
   @override
   State<StatefulWidget> createState() {
-    return S();
+    return BS();
   }
 }
 
-class S extends StoreState<W, E> {
+class BS extends StoreState<B, E, int> {
   @override
   Widget build(BuildContext context) {
-    return Text(
-      '${widget.store.getState(p)}',
-      textDirection: TextDirection.ltr,
-    );
+    bBuildCount++;
+    return Text('${projection.toString()}', textDirection: TextDirection.ltr);
+  }
+
+  @override
+  int projector(int cached, Events<E> events) {
+    return p(cached, events);
   }
 }
 

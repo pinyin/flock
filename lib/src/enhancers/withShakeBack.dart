@@ -115,6 +115,5 @@ Observable<bool> _isShaking$() {
       .transform(StreamTransformer.fromBind(extractShake));
   return shake$
       .switchMap((e) => Observable.timer(false, timeout).startWith(e))
-      .startWith(false)
-      .distinct();
+      .startWith(false);
 }

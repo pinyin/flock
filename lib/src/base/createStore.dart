@@ -21,8 +21,8 @@ class _EventStoreImpl<E> implements InnerStore<E> {
     final cached = _projections.get<P>(projector);
     if (cached?.cursor == _storage.cursor) return cached.projection;
     final projection = cached != null && cached.cursor < _storage.cursor
-        ? projector(cached?.projection, _storage.readUpTo(cached?.cursor), this)
-        : projector(cached?.projection, _storage.readUpTo(0), this);
+        ? projector(cached?.projection, _storage.readSince(cached?.cursor))
+        : projector(cached?.projection, _storage.readSince(0));
     _projections.set(projector, _storage.cursor, projection);
     return projection;
   }

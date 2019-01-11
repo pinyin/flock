@@ -21,8 +21,8 @@ class _StoreBuilderState<E, P> extends State<StoreBuilder<E, P>> {
   @override
   void initState() {
     super.initState();
-    _unsubscribe = widget.store.subscribe(_updateIfNecessary);
     _projection = widget.store.getState(widget.projector);
+    _unsubscribe = widget.store.subscribe(_updateIfNecessary);
   }
 
   Unsubscribe _unsubscribe;
