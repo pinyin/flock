@@ -52,3 +52,9 @@
 * Rename `StoreWidget` interface
 * Remove `Projectable` from signature of `Projector`
 * Remove `EventStack`, using chronological `List` instead
+
+## [0.1.0]
+
+* Separate `Reducer` and `Initializer`
+* Rename `InnerStore` to `StoreForEnhancer` 
+* Expose more methods in `StoreForEnhancer` 
