@@ -4,10 +4,10 @@ import 'package:flutter/widgets.dart';
 class StoreBuilder<E, P> extends StatefulWidget {
   StoreBuilder(
       {Key key,
-        @required this.store,
-        @required this.reducer,
-        @required this.initializer,
-        @required this.builder})
+      @required this.store,
+      @required this.reducer,
+      @required this.initializer,
+      @required this.builder})
       : super(key: key) {}
 
   final Store<E> store;

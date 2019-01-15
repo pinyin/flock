@@ -4,7 +4,7 @@ import 'package:flock/src/base/types.dart';
 StoreForEnhancer<E> createStore<E>(List<E> prepublish,
     [Iterable<StoreEnhancer<E>> enhancers = const []]) {
   final createStore = enhancers.fold<StoreCreator<E>>(
-          (List<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
+      (List<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
   return createStore(prepublish);
 }
 

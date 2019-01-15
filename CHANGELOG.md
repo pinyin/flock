@@ -58,3 +58,9 @@
 * Separate `Reducer` and `Initializer`
 * Rename `InnerStore` to `StoreForEnhancer` 
 * Expose more methods in `StoreForEnhancer` 
+
+## [0.1.1]
+
+* Remove `withShakeBack`
+* Fix StackOverflow when get `Store#cursor`
+* Remove unnecessary dependencies.

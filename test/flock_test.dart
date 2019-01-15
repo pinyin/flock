@@ -65,19 +65,19 @@ void main() {
     });
 
     testWidgets('should not rebuild widgets unless state is changed',
-            (WidgetTester tester) async {
-          await tester.pumpWidget(B());
-          var buildCount = bBuildCount;
-          s.dispatch(EP(0));
-          await tester.pump();
-          expect(bBuildCount, buildCount);
-          s.dispatch(EP(1));
-          await tester.pump();
-          expect(bBuildCount, buildCount + 1);
-          s.dispatch(EP(0));
-          await tester.pump();
-          expect(bBuildCount, buildCount + 1);
-        });
+        (WidgetTester tester) async {
+      await tester.pumpWidget(B());
+      var buildCount = bBuildCount;
+      s.dispatch(EP(0));
+      await tester.pump();
+      expect(bBuildCount, buildCount);
+      s.dispatch(EP(1));
+      await tester.pump();
+      expect(bBuildCount, buildCount + 1);
+      s.dispatch(EP(0));
+      await tester.pump();
+      expect(bBuildCount, buildCount + 1);
+    });
   });
 
   group('Flutter Builder integration', () {
@@ -97,19 +97,19 @@ void main() {
     });
 
     testWidgets('should not rebuild widgets unless state is changed',
-            (WidgetTester tester) async {
-          await tester.pumpWidget(BW());
-          var buildCount = bwBuildCount;
-          s.dispatch(EP(0));
-          await tester.pump();
-          expect(bwBuildCount, buildCount);
-          s.dispatch(EP(1));
-          await tester.pump();
-          expect(bwBuildCount, buildCount + 1);
-          s.dispatch(EP(0));
-          await tester.pump();
-          expect(bwBuildCount, buildCount + 1);
-        });
+        (WidgetTester tester) async {
+      await tester.pumpWidget(BW());
+      var buildCount = bwBuildCount;
+      s.dispatch(EP(0));
+      await tester.pump();
+      expect(bwBuildCount, buildCount);
+      s.dispatch(EP(1));
+      await tester.pump();
+      expect(bwBuildCount, buildCount + 1);
+      s.dispatch(EP(0));
+      await tester.pump();
+      expect(bwBuildCount, buildCount + 1);
+    });
   });
 }
 
