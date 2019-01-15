@@ -5,12 +5,14 @@ class StoreBuilder<E, P> extends StatefulWidget {
   StoreBuilder(
       {Key key,
         @required this.store,
-      @required this.projector,
+        @required this.reducer,
+        @required this.initializer,
         @required this.builder})
-      : super(key: key);
+      : super(key: key) {}
 
   final Store<E> store;
-  final Projector<E, P> projector;
+  final Reducer<P, E> reducer;
+  final Initializer<P, E> initializer;
   final Widget Function(BuildContext context, P projection) builder;
 
   @override
@@ -21,7 +23,7 @@ class _StoreBuilderState<E, P> extends State<StoreBuilder<E, P>> {
   @override
   void initState() {
     super.initState();
-    _projection = widget.store.getState(widget.projector);
+    _projection = widget.store.getState(widget.reducer, widget.initializer);
     _unsubscribe = widget.store.subscribe(_updateIfNecessary);
   }
 
@@ -36,7 +38,7 @@ class _StoreBuilderState<E, P> extends State<StoreBuilder<E, P>> {
       _unsubscribe = widget.store.subscribe(_updateIfNecessary);
       _updateIfNecessary();
     }
-    if (oldWidget.projector != widget.projector) {
+    if (oldWidget.reducer != widget.reducer) {
       _updateIfNecessary();
     }
   }
@@ -48,7 +50,7 @@ class _StoreBuilderState<E, P> extends State<StoreBuilder<E, P>> {
   }
 
   void _updateIfNecessary() {
-    final curr = widget.store.getState<P>(widget.projector);
+    final curr = widget.store.getState<P>(widget.reducer, widget.initializer);
     if (_projection != curr) {
       setState(() {
         _projection = curr;

@@ -60,13 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
     widget.store.dispatch(Increase());
   }
 
-  int counter(int prev, Events<AppEvent> events) {
+  int counter(int prev, AppEvent event) {
     var next = prev ?? 0;
-    for (final event in events) {
-      if (event is Increase) next++;
-      if (event is Decrease) next--;
-    }
+    if (event is Increase) next++;
+    if (event is Decrease) next--;
     return next;
+  }
+
+  int initializer(List<AppEvent> events) {
+    return events.fold(0, counter);
   }
 
   @override
@@ -88,7 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: Theme.of(context).textTheme.display1,
                   ),
               store: widget.store,
-              projector: counter,
+              reducer: counter,
+              initializer: initializer,
             )
           ],
         ),

@@ -4,34 +4,37 @@
 abstract class Store<E> {
   void dispatch(E event);
 
-  Unsubscribe subscribe(Subscriber<E> subscriber);
+  Unsubscribe subscribe(Subscriber subscriber);
 
-  P getState<P>(Projector<E, P> projector);
+  P getState<P>(Reducer<P, E> projector, Initializer<P, E> initializer);
 }
 
 /// [Store] interface for store enhancers.
-abstract class InnerStore<E> extends Store<E> {
-  void replaceEvents(Iterable<E> events);
+abstract class StoreForEnhancer<E> extends Store<E> {
+  void dispatch([E event]);
+
+  int get cursor;
+
+  List<E> get events;
+
+  void replaceEvents(List<E> events, [int cursor]);
 }
 
 /// Callback when [Store] is updated.
-typedef Subscriber<E> = Function();
+typedef Subscriber = Function();
 
 /// Stop receiving events
 typedef Unsubscribe = Function();
 
 /// Store creator for middleware.
-typedef StoreCreator<E> = InnerStore<E> Function(Iterable<E> prepublish);
+typedef StoreCreator<E> = StoreForEnhancer<E> Function(List<E> prepublish);
 
 /// [StoreEnhancer] are called "store enhancer" in Redux.
 /// They wrap store and enable features like time travel.
 typedef StoreEnhancer<E> = StoreCreator<E> Function(StoreCreator<E> inner);
 
-/// A [Projector] is a view derived from events.
-typedef Projector<E, P> = P Function(P cached, Events<E> events);
+/// A [Reducer] calculates view derived from events.
+typedef Reducer<P, E> = P Function(P prev, E event);
 
-/// A [Projector] receives events since its last updated as [Events]
-abstract class Events<E> implements List<E> {
-  @override
-  Events<E> get reversed;
-}
+/// A [Initializer] is only called when reducer hasn't called
+typedef Initializer<P, E> = P Function(List<E> events);

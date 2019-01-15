@@ -1,52 +1,78 @@
-import 'package:flock/src/base/EventStorage.dart';
-import 'package:flock/src/base/Projections.dart';
 import 'package:flock/src/base/types.dart';
+import 'package:meta/meta.dart';
 
 /// Create a Flock [Store].
-InnerStore<E> createStore<E>(
-    [Iterable<E> prepublish = const [],
-    Iterable<StoreEnhancer<E>> enhancers = const []]) {
+StoreForEnhancer<E> createStore<E>(List<E> prepublish,
+    [Iterable<StoreEnhancer<E>> enhancers = const []]) {
   final createStore = enhancers.fold<StoreCreator<E>>(
-      (Iterable<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
+          (List<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
   return createStore(prepublish);
 }
 
-class _EventStoreImpl<E> implements InnerStore<E> {
-  _EventStoreImpl(Iterable<E> prepublish) {
-    this._storage.replaceEvents(prepublish);
+class _EventStoreImpl<E> implements StoreForEnhancer<E> {
+  _EventStoreImpl(List<E> prepublish) {
+    this._events = prepublish;
+    _cursor = this._events.length;
   }
 
   @override
-  P getState<P>(Projector<E, P> projector) {
-    final cached = _projections.get<P>(projector);
-    if (cached?.cursor == _storage.cursor) return cached.projection;
-    final projection = cached != null && cached.cursor < _storage.cursor
-        ? projector(cached?.projection, _storage.readSince(cached?.cursor))
-        : projector(cached?.projection, _storage.readSince(0));
-    _projections.set(projector, _storage.cursor, projection);
-    return projection;
+  P getState<P>(Reducer<P, E> reducer, Initializer<P, E> initializer) {
+    final isCacheUsable =
+        _stateCache[reducer] != null && _stateCache[reducer].cursor <= _cursor;
+    final prev = isCacheUsable
+        ? _stateCache[reducer]
+        : CacheItem(_cursor, initializer(_events));
+    P next = prev.state;
+    for (var i = _cursor - prev.cursor; i > 0; i--) {
+      next = reducer(next, _events[_events.length - i]);
+    }
+    _stateCache[reducer] = CacheItem(_cursor, next);
+    return next;
   }
 
   @override
-  E dispatch(E event) {
-    _storage.publish(event);
+  void dispatch([E event]) {
+    if (event != null) {
+      _events.add(event);
+      _cursor++;
+    }
     _listeners.forEach((listener) => listener()); // TODO catch errors
-    return null;
   }
 
   @override
-  void replaceEvents(Iterable<E> events) {
-    _projections.clear();
-    _storage.replaceEvents(events);
+  void replaceEvents(List<E> events, [int cursor]) {
+    if (_events != events) {
+      _stateCache = Expando<CacheItem>();
+      _events = events;
+    }
+    if (cursor != null && cursor != _cursor) {
+      _stateCache = Expando<CacheItem>();
+      _cursor = cursor;
+    }
   }
 
   @override
-  Unsubscribe subscribe(Subscriber<E> subscriber) {
+  Unsubscribe subscribe(Subscriber subscriber) {
     _listeners.add(subscriber);
     return () => _listeners.remove(subscriber);
   }
 
-  final _listeners = Set<Subscriber<E>>();
-  final _storage = EventStorage<E>();
-  final _projections = Projections<E>();
+  @override
+  List<E> get events => _events;
+
+  @override
+  int get cursor => cursor;
+
+  List<E> _events;
+  int _cursor;
+  final _listeners = Set<Subscriber>();
+  var _stateCache = Expando<CacheItem>();
+}
+
+@immutable
+class CacheItem {
+  final int cursor;
+  final dynamic state;
+
+  CacheItem(this.cursor, this.state);
 }

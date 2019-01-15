@@ -8,9 +8,11 @@ abstract class StoreWidget<E> extends StatefulWidget {
 }
 
 abstract class StoreState<W extends StoreWidget<E>, E, P> extends State<W> {
-  P projector(P cached, Events<E> events);
+  P reducer(P cached, E event);
 
-  P projection;
+  P initializer(List<E> events);
+
+  P state;
 
   void dispatch(E event) {
     widget.store.dispatch(event);
@@ -19,7 +21,7 @@ abstract class StoreState<W extends StoreWidget<E>, E, P> extends State<W> {
   @override
   void initState() {
     super.initState();
-    projection = widget.store.getState(projector);
+    state = widget.store.getState(reducer, initializer);
     _unsubscribe = widget.store.subscribe(_updateIfNecessary);
   }
 
@@ -42,10 +44,10 @@ abstract class StoreState<W extends StoreWidget<E>, E, P> extends State<W> {
   }
 
   void _updateIfNecessary() {
-    final curr = widget.store.getState<P>(projector);
-    if (projection != curr) {
+    final curr = widget.store.getState<P>(reducer, initializer);
+    if (state != curr) {
       setState(() {
-        projection = curr;
+        state = curr;
       });
     }
   }
