@@ -1,5 +1,4 @@
 import 'package:flock/src/base/types.dart';
-import 'package:meta/meta.dart';
 
 /// Create a Flock [Store].
 StoreForEnhancer<E> createStore<E>(List<E> prepublish,
@@ -61,7 +60,7 @@ class _EventStoreImpl<E> implements StoreForEnhancer<E> {
   List<E> get events => _events;
 
   @override
-  int get cursor => cursor;
+  int get cursor => _cursor;
 
   List<E> _events;
   int _cursor;
@@ -69,7 +68,6 @@ class _EventStoreImpl<E> implements StoreForEnhancer<E> {
   var _stateCache = Expando<CacheItem>();
 }
 
-@immutable
 class CacheItem {
   final int cursor;
   final dynamic state;
