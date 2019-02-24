@@ -1,8 +1,9 @@
 import 'package:flock/src/base/types.dart';
 
 /// Create a Flock [Store].
-StoreForEnhancer<E> createStore<E>(List<E> prepublish,
-    [Iterable<StoreEnhancer<E>> enhancers = const []]) {
+StoreForEnhancer<E> createStore<E>(
+    [List<E> prepublish = const [],
+    Iterable<StoreEnhancer<E>> enhancers = const []]) {
   final createStore = enhancers.fold<StoreCreator<E>>(
       (List<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
   return createStore(prepublish);

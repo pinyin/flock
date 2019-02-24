@@ -79,33 +79,6 @@ int i(List<E> events) {
 
 var bBuildCount = 0;
 
-class B extends StoreWidget<E> {
-  final store = s;
-
-  @override
-  State<StatefulWidget> createState() {
-    return BS();
-  }
-}
-
-class BS extends StoreState<B, E, int> {
-  @override
-  Widget build(BuildContext context) {
-    bBuildCount++;
-    return Text('${state.toString()}', textDirection: TextDirection.ltr);
-  }
-
-  @override
-  int initializer(List<E> events) {
-    return i(events);
-  }
-
-  @override
-  int reducer(int cached, E event) {
-    return r(cached, event);
-  }
-}
-
 var bwBuildCount = 0;
 
 class BW extends StatelessWidget {
