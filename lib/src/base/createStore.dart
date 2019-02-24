@@ -21,7 +21,7 @@ class _EventStoreImpl<E> implements StoreForEnhancer<E> {
     final prev = isCacheUsable
         ? _stateCache[reducer]
         : CacheItem(_cursor, initializer(_events));
-    P next = prev.state;
+    P next = prev.state as P;
     for (var i = _cursor - prev.cursor; i > 0; i--) {
       next = reducer(next, _events[_events.length - i]);
     }
