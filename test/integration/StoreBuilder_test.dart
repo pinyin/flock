@@ -5,14 +5,16 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Flutter Builder integration', () {
     testWidgets('should create state on build', (WidgetTester tester) async {
+      final Store<E> s = createStore<E>([]);
       s.dispatch(EQ(0));
-      await tester.pumpWidget(BW());
+      await tester.pumpWidget(BW(s: s));
       expect(find.text('0'), findsOneWidget);
     });
 
     testWidgets('should update widget with store', (WidgetTester tester) async {
+      final Store<E> s = createStore<E>([]);
       s.dispatch(EQ(0));
-      await tester.pumpWidget(BW());
+      await tester.pumpWidget(BW(s: s));
       expect(find.text('0'), findsOneWidget);
       s.dispatch(EP(1));
       await tester.pump();
@@ -21,7 +23,8 @@ void main() {
 
     testWidgets('should not rebuild widgets unless state is changed',
         (WidgetTester tester) async {
-      await tester.pumpWidget(BW());
+          final Store<E> s = createStore<E>([]);
+          await tester.pumpWidget(BW(s: s));
       var buildCount = bwBuildCount;
       s.dispatch(EP(0));
       await tester.pump();
@@ -56,8 +59,6 @@ class EQ extends E {
   final int v;
 }
 
-final Store<E> s = createStore<E>([]);
-
 var reduceCount = 0;
 
 int r(int prev, E event) {
@@ -82,6 +83,10 @@ var bBuildCount = 0;
 var bwBuildCount = 0;
 
 class BW extends StatelessWidget {
+  BW({@required this.s}) : super();
+
+  final Store<E> s;
+
   @override
   Widget build(BuildContext context) {
     return StoreBuilder(

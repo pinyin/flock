@@ -5,9 +5,11 @@ import 'package:matcher/matcher.dart' as Matcher;
 void main() {
   group('createStore', () {
     test('should return a valid EventStore', () {
+      final Store<E> s = createStore<E>([]);
       expect(s, Matcher.TypeMatcher<Store<E>>());
     });
     test('should dispatch event to subscriber', () {
+      final Store<E> s = createStore<E>([]);
       var value = 0;
       final unsubscribe = s.subscribe(() {
         value += 1;
@@ -23,10 +25,12 @@ void main() {
     });
 
     test('should support state', () {
+      final Store<E> s = createStore<E>([]);
       var state = s.getState(r, i);
-      expect(state, 4);
+      expect(state, i([]));
     });
     test('should cache state result for the same p', () {
+      final Store<E> s = createStore<E>([]);
       final before = reduceCount;
       final v1 = s.getState(r, i);
       expect(reduceCount, before);
@@ -36,6 +40,7 @@ void main() {
       expect(reduceCount, before + 1);
     });
     test('should clean state cache after events got replaced', () {
+      final Store<E> s = createStore<E>([]);
       final before = reduceCount;
       (s as StoreForEnhancer<E>).replaceEvents([]);
       s.getState(r, i);
@@ -67,8 +72,6 @@ class EQ extends E {
 
   final int v;
 }
-
-final Store<E> s = createStore<E>([]);
 
 var reduceCount = 0;
 
