@@ -35,16 +35,7 @@ final store = createStore<E>();
 
 // In you widget:
 class BW extends StatelessWidget {
-  int reducer(int prev, E event) {
-    var result = prev ?? 0;
-    if (event is Add)
-      result += event.v;
-    else if (event is Minus)
-      result -= int.tryParse(event.value) ?? 0;
-    return result;
-  }
-
-  int initializer(int prev, List<E> events) {
+  int sum(int prev, List<E> events) {
     var result = prev ?? 0;
     for (var event in events) {
       if (event is Add)
@@ -63,8 +54,7 @@ class BW extends StatelessWidget {
             textDirection: TextDirection.ltr,
           ),
       store: store, // use store from wherever you like
-      reducer: reducer,
-      initializer: initializer
+      projector: sum
     );
   }
 }
