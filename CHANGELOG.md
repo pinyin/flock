@@ -64,3 +64,8 @@
 * Remove `withShakeBack`
 * Fix StackOverflow when get `Store#cursor`
 * Remove unnecessary dependencies.
+
+## [0.3.0]
+
+* Update interface
+* Add UseCase

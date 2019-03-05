@@ -11,36 +11,38 @@ StoreForEnhancer<E> createStore<E>(
 
 class _EventStoreImpl<E> implements StoreForEnhancer<E> {
   _EventStoreImpl(List<E> prepublish) {
-    this._events = prepublish;
+    assert(prepublish is List<E>);
+    this._events = List.from(prepublish);
     _cursor = this._events.length;
   }
 
   @override
-  P getState<P>(Reducer<P, E> reducer, Initializer<P, E> initializer) {
-    final isCacheUsable =
-        _stateCache[reducer] != null && _stateCache[reducer].cursor <= _cursor;
-    final prev = isCacheUsable
-        ? _stateCache[reducer]
-        : CacheItem(_cursor, initializer(_events));
-    P next = prev.state as P;
-    for (var i = _cursor - prev.cursor; i > 0; i--) {
-      next = reducer(next, _events[_events.length - i]);
-    }
-    _stateCache[reducer] = CacheItem(_cursor, next);
-    return next;
+  P project<P>(Projector<P, E> projector) {
+    assert(projector is Projector<P, E>);
+    final isCacheReusable = _stateCache[projector] != null &&
+        _stateCache[projector].cursor <= _cursor;
+    final prev = isCacheReusable
+        ? _stateCache[projector]
+        : CacheItem(_cursor, projector(null, _events));
+    P nextState = prev.state as P;
+    if (prev.cursor < _cursor)
+      nextState = projector(nextState,
+          _events.sublist(prev.cursor, _cursor)); // TODO cache sublist?
+    _stateCache[projector] = CacheItem(_cursor, nextState);
+    return nextState;
   }
 
   @override
-  void dispatch([E event]) {
-    if (event != null) {
-      _events.add(event);
-      _cursor++;
-    }
-    _listeners.forEach((listener) => listener()); // TODO catch errors
+  void publish(E event) {
+    assert(event is E);
+    _events.add(event);
+    _cursor++;
+    _listeners.forEach((listener) => listener());
   }
 
   @override
   void replaceEvents(List<E> events, [int cursor]) {
+    assert(events is List<E>);
     if (_events != events) {
       _stateCache = Expando<CacheItem>();
       _events = events;
@@ -53,6 +55,7 @@ class _EventStoreImpl<E> implements StoreForEnhancer<E> {
 
   @override
   Unsubscribe subscribe(Subscriber subscriber) {
+    assert(subscriber is Subscriber);
     _listeners.add(subscriber);
     return () => _listeners.remove(subscriber);
   }

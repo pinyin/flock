@@ -5,14 +5,12 @@ class StoreBuilder<E, P> extends StatefulWidget {
   StoreBuilder(
       {Key key,
       @required this.store,
-      @required this.reducer,
-      @required this.initializer,
+      @required this.projector,
       @required this.builder})
       : super(key: key) {}
 
   final Store<E> store;
-  final Reducer<P, E> reducer;
-  final Initializer<P, E> initializer;
+  final Projector<P, E> projector;
   final Widget Function(BuildContext context, P projection) builder;
 
   @override
@@ -23,8 +21,8 @@ class _StoreBuilderState<E, P> extends State<StoreBuilder<E, P>> {
   @override
   void initState() {
     super.initState();
-    _projection = widget.store.getState(widget.reducer, widget.initializer);
-    _unsubscribe = widget.store.subscribe(_updateIfNecessary);
+    _projection = widget.store.project(widget.projector);
+    _unsubscribe = widget.store.subscribe(_scheduleUpdate);
   }
 
   Unsubscribe _unsubscribe;
@@ -35,11 +33,11 @@ class _StoreBuilderState<E, P> extends State<StoreBuilder<E, P>> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.store != widget.store) {
       _unsubscribe();
-      _unsubscribe = widget.store.subscribe(_updateIfNecessary);
-      _updateIfNecessary();
+      _unsubscribe = widget.store.subscribe(_scheduleUpdate);
+      _scheduleUpdate();
     }
-    if (oldWidget.reducer != widget.reducer) {
-      _updateIfNecessary();
+    if (oldWidget.projector != widget.projector) {
+      _scheduleUpdate();
     }
   }
 
@@ -49,8 +47,9 @@ class _StoreBuilderState<E, P> extends State<StoreBuilder<E, P>> {
     _unsubscribe();
   }
 
-  void _updateIfNecessary() {
-    final curr = widget.store.getState<P>(widget.reducer, widget.initializer);
+  void _scheduleUpdate() {
+    // TODO batch updates
+    final curr = widget.store.project<P>(widget.projector);
     if (_projection != curr) {
       setState(() {
         _projection = curr;

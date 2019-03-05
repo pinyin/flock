@@ -6,6 +6,10 @@ Coordinate Flutter widgets' states with event sourcing.
 
 Inspired by [Redux](https://github.com/reduxjs/redux/).
 
+## Design
+
+
+
 ## Usage
 
 ```dart

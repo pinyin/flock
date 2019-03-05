@@ -2,17 +2,14 @@
 
 /// An [Store] records all events happened in app and acts as the single source of truth.
 abstract class Store<E> {
-  void dispatch(E event);
-
+  void publish(E event);
   Unsubscribe subscribe(Subscriber subscriber);
 
-  P getState<P>(Reducer<P, E> projector, Initializer<P, E> initializer);
+  P project<P>(Projector<P, E> projector);
 }
 
 /// [Store] interface for store enhancers.
 abstract class StoreForEnhancer<E> extends Store<E> {
-  void dispatch([E event]);
-
   int get cursor;
 
   List<E> get events;
@@ -33,8 +30,6 @@ typedef StoreCreator<E> = StoreForEnhancer<E> Function(List<E> prepublish);
 /// They wrap store and enable features like time travel.
 typedef StoreEnhancer<E> = StoreCreator<E> Function(StoreCreator<E> inner);
 
-/// A [Reducer] calculates view derived from events.
-typedef Reducer<P, E> = P Function(P prev, E event);
-
-/// A [Initializer] is only called when reducer hasn't called
-typedef Initializer<P, E> = P Function(List<E> events);
+/// A [Projector] calculates view derived from events.
+/// [prev] is nullable
+typedef Projector<P, E> = P Function(P prev, List<E> event);
