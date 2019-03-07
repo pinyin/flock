@@ -53,6 +53,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.6"
+  observable_state_lifecycle:
+    dependency: "direct main"
+    description:
+      name: observable_state_lifecycle
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   path:
     dependency: transitive
     description:

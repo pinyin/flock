@@ -69,3 +69,7 @@
 
 * Update interface
 * Add UseCase
+
+## [0.3.2]
+
+* Add ObservableStateLifecycle integration
