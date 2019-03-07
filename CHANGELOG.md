@@ -77,3 +77,7 @@
 ## [0.4.0]
 
 * Update observeStore interface
+
+## [0.4.1]
+
+* Use `active_observers`
