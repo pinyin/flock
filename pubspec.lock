@@ -59,7 +59,7 @@ packages:
       name: observable_state_lifecycle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0"
+    version: "0.3.1"
   path:
     dependency: transitive
     description:

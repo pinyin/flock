@@ -47,16 +47,18 @@ class Test extends StatefulWidget {
 }
 
 class _TestState extends State<Test> with ObservableStateLifecycle<Test> {
-  _TestState() : super() {
-    addLifecycleObserver(observeStore(
-        () => widget.store, sum, (int p) => setState(() => result = p)));
-  }
+  ObserveStore<int, MathEvent> store;
 
-  int result;
+  @override
+  void initState() {
+    super.initState();
+    store = observeStore(() => widget.store, sum, this);
+  }
 
   @override
   Widget build(BuildContext context) {
     widget.onRender();
-    return Text(result.toString(), textDirection: TextDirection.ltr);
+    return Text(store.projection().toString(),
+        textDirection: TextDirection.ltr);
   }
 }

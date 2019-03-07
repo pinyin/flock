@@ -73,3 +73,7 @@
 ## [0.3.2]
 
 * Add ObservableStateLifecycle integration
+
+## [0.4.0]
+
+* Update observeStore interface

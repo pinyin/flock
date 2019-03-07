@@ -1,32 +1,36 @@
 import 'package:flock/flock.dart';
 import 'package:observable_state_lifecycle/observable_state_lifecycle.dart';
 
-StateLifecycleObserver observeStore<E, P>(
-    Store<E> getStore(), Projector<P, E> projector, void Function(P) setState) {
-  Store<E> store;
-  Unsubscribe unsubscribe;
+ObserveStore<P, E> observeStore<P, E>(
+  Store<E> getStore(),
+  Projector<P, E> projector,
+  ObservableStateLifecycle host,
+) {
+  Store<E> store = getStore();
+  ObserveState<P> projection = observeState(store.project(projector), host);
 
-  void subscribeToStore() {
-    if (store == getStore()) return;
-    if (unsubscribe is Unsubscribe) unsubscribe();
+  observeEffect(() {
     store = getStore();
-    P projection = store.project(projector);
-    setState(projection);
-    unsubscribe = store.subscribe(() {
-      var newProjection = store.project(projector);
-      if (newProjection == projection) return;
-      projection = newProjection;
-      setState(projection);
-    });
+    projection.value = store.project(projector);
+    return store.subscribe(() => projection.value = store.project(projector));
+  }, () => store == getStore(), host);
+
+  return ObserveStore(getStore, () => projection.value);
+}
+
+class ObserveStore<P, E> {
+  ObserveStore(Store<E> getStore(), P getProjection())
+      : _getStore = getStore,
+        _getProjection = getProjection;
+
+  final Store<E> Function() _getStore;
+  final P Function() _getProjection;
+
+  P projection() {
+    return _getProjection();
   }
 
-  return (phase) {
-    if (phase == StateLifecyclePhase.initState ||
-        phase == StateLifecyclePhase.reassemble) {
-      subscribeToStore();
-    }
-    if (phase == StateLifecyclePhase.dispose) {
-      unsubscribe();
-    }
-  };
+  void publish(E event) {
+    _getStore().publish(event);
+  }
 }
