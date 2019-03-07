@@ -4,12 +4,13 @@ import 'package:observable_state_lifecycle/observable_state_lifecycle.dart';
 StateLifecycleObserver observeStore<E, P>(
     Store<E> getStore(), Projector<P, E> projector, void Function(P) setState) {
   Store<E> store;
-  P projection;
   Unsubscribe unsubscribe;
 
-  void resubscribeToStore() {
+  void subscribeToStore() {
+    if (store == getStore()) return;
     if (unsubscribe is Unsubscribe) unsubscribe();
-    projection = store.project(projector);
+    store = getStore();
+    P projection = store.project(projector);
     setState(projection);
     unsubscribe = store.subscribe(() {
       var newProjection = store.project(projector);
@@ -20,21 +21,12 @@ StateLifecycleObserver observeStore<E, P>(
   }
 
   return (phase) {
-    switch (phase) {
-      case StateLifecyclePhase.initState:
-        store = getStore();
-        resubscribeToStore();
-        break;
-      case StateLifecyclePhase.reassemble:
-        if (store == getStore()) break;
-        store = getStore();
-        resubscribeToStore();
-        break;
-      case StateLifecyclePhase.dispose:
-        unsubscribe();
-        break;
-      default:
-        ;
+    if (phase == StateLifecyclePhase.initState ||
+        phase == StateLifecyclePhase.reassemble) {
+      subscribeToStore();
+    }
+    if (phase == StateLifecyclePhase.dispose) {
+      unsubscribe();
     }
   };
 }
