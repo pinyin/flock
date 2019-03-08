@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:flock/base/types.dart';
 import 'package:flock/flock.dart';
-import 'package:flock/src/base/types.dart';
 
 typedef UseCase<E> = Stream<E> Function(
     Stream<E> events, P Function<P>(Projector<P, E> projector) project);

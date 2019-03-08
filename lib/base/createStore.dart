@@ -1,4 +1,4 @@
-import 'package:flock/src/base/types.dart';
+import 'package:flock/base/types.dart';
 
 /// Create a Flock [Store].
 StoreForEnhancer<E> createStore<E>(
