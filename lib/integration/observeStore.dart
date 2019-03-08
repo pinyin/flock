@@ -4,8 +4,8 @@ import 'package:flock/flock.dart';
 ActiveObserver<ObserveStore<P, E>> observeStore<P, E>(
     Store<E> getStore(), Projector<P, E> projector) {
   return (host) {
-    Store<E> store = getStore();
-    ObserveState<P> projection = observeState(store.project(projector))(host);
+    Store<E> store;
+    ObserveState<P> projection = observeState<P>(null)(host);
 
     observeEffect(() {
       store = getStore();
