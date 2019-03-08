@@ -52,7 +52,7 @@ class _TestState extends State<Test> with ObservableStateLifecycle<Test> {
   @override
   void initState() {
     super.initState();
-    store = observeStore(() => widget.store, sum, this);
+    store = observeStore(() => widget.store, sum)(this);
   }
 
   @override

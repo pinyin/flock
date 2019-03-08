@@ -14,7 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
   observable_state_lifecycle: ^0.4.0
-  active_observers: ^0.0.1
+  active_observers: ^0.1.0
 
 dev_dependencies:
   flutter_test:
