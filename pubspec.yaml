@@ -3,12 +3,12 @@ description:
   |
   Coordinate Flutter widgets' states with event sourcing.
     What if Redux store contains no reducers, no state but only actions?
-version: 0.4.1
+version: 0.5.0
 author: Bo Bao <bob432091@gmail.com>
 homepage: https://github.com/pinyin/flock
 
 environment:
-  sdk: ">=2.0.0 <3.0.0"
+  sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
   flutter:

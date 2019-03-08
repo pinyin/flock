@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:observable_state_lifecycle/observable_state_lifecycle.dart';
 
-import '../MathEvent.dart';
+import '../test_utils.dart';
 
 void main() {
   group('ObserveStore', () {

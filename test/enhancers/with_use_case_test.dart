@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flock/flock.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../MathEvent.dart';
+import '../test_utils.dart';
 
 void main() {
   group('withUseCase', () {

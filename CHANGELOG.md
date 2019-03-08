@@ -81,3 +81,7 @@
 ## [0.4.1]
 
 * Use `active_observers`
+
+## [0.5.0]
+
+* Update file structure.
