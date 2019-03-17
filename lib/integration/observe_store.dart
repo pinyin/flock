@@ -1,20 +1,17 @@
 import 'package:active_observers/active_observers.dart';
 import 'package:flock/flock.dart';
 
-ActiveObserver<ObserveStore<P, E>> observeStore<P, E>(
+ObserveStore<P, E> observeStore<P, E>(
     Store<E> getStore(), Projector<P, E> projector) {
-  return (host) {
-    Store<E> store;
-    ObserveState<P> projection = observeState<P>(null)(host);
+  Store<E> store = getStore();
+  ObserveState<P> projection = observeState<P>(() => store.project(projector));
 
-    observeEffect(() {
-      store = getStore();
-      projection.value = store.project(projector);
-      return store.subscribe(() => projection.value = store.project(projector));
-    }, () => store == getStore())(host);
+  observeEffect(() {
+    store = getStore();
+    return store.subscribe(() => projection.value = store.project(projector));
+  }, () => store == getStore());
 
-    return ObserveStore(getStore, () => projection.value);
-  };
+  return ObserveStore(getStore, () => projection.value);
 }
 
 class ObserveStore<P, E> {

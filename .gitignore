@@ -18,6 +18,8 @@ ios/Runner/GeneratedPluginRegistrant.*
 local.properties
 .flutter-plugins
 
+pubspec.lock
+
 # Miscellaneous
 *.class
 *.lock

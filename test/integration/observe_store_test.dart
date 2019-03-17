@@ -1,7 +1,7 @@
+import 'package:active_observers/active_observers.dart';
 import 'package:flock/flock.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:observable_state_lifecycle/observable_state_lifecycle.dart';
 
 import '../test_utils.dart';
 
@@ -46,13 +46,12 @@ class Test extends StatefulWidget {
   _TestState createState() => _TestState();
 }
 
-class _TestState extends State<Test> with ObservableStateLifecycle<Test> {
+class _TestState extends State<Test> with ActiveObservers {
   ObserveStore<int, MathEvent> store;
 
   @override
-  void initState() {
-    super.initState();
-    store = observeStore(() => widget.store, sum)(this);
+  void assembleActiveObservers() {
+    store = observeStore(() => widget.store, sum);
   }
 
   @override

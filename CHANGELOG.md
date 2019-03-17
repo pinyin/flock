@@ -85,3 +85,7 @@
 ## [0.5.0]
 
 * Update file structure.
+
+## [0.6.0]
+
+* Update `observeStore`
