@@ -55,4 +55,14 @@ class _StoreWithUseCase<E> extends StoreForEnhancer<E> {
   StreamSubscription<E> _subscription;
   StoreForEnhancer<E> _inner;
   UseCase<E> _useCase;
+
+  @override
+  void addListener(listener) {
+    _inner.addListener(listener);
+  }
+
+  @override
+  void removeListener(listener) {
+    _inner.removeListener(listener);
+  }
 }

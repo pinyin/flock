@@ -1,7 +1,9 @@
 // TODO separate types into different files
 
+import 'package:flutter/foundation.dart';
+
 /// An [Store] records all events happened in app and acts as the single source of truth.
-abstract class Store<E> {
+abstract class Store<E> implements Listenable {
   void publish(E event);
   Unsubscribe subscribe(Subscriber subscriber);
 

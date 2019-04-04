@@ -89,3 +89,9 @@
 ## [0.6.0]
 
 * Update `observeStore`
+
+## [0.7.0]
+
+* Make `Store` a `Listenable`
+* Remove unnecessary dependency
+* `Store#subscribe` can only be cancelled by returned `Unsubscribe` function
