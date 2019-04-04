@@ -19,11 +19,14 @@ abstract class StoreForEnhancer<E> extends Store<E> {
   void replaceEvents(List<E> events, [int cursor]);
 }
 
+/// [Store.publish] interface
+typedef Publish<E> = void Function(E);
+
 /// Callback when [Store] is updated.
-typedef Subscriber = Function();
+typedef Subscriber = void Function();
 
 /// Stop receiving events
-typedef Unsubscribe = Function();
+typedef Unsubscribe = void Function();
 
 /// Store creator for middleware.
 typedef StoreCreator<E> = StoreForEnhancer<E> Function(List<E> prepublish);
