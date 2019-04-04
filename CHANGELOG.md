@@ -95,3 +95,5 @@
 * Make `Store` a `Listenable`
 * Remove unnecessary dependency
 * `Store#subscribe` can only be cancelled by returned `Unsubscribe` function
+* Add `projectToListenable` and `projectToStream`
+* Remove `observeStore`
