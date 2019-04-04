@@ -1,6 +1,7 @@
 library flock;
 
-export 'package:flock/base/create_store.dart';
-export 'package:flock/base/types.dart';
-export 'package:flock/enhancers/with_use_case.dart';
-export 'package:flock/integration/store_builder.dart';
+export 'base/create_store.dart';
+export 'base/types.dart';
+export 'enhancers/with_use_case.dart';
+export 'integration/project_to_stream.dart';
+export 'integration/store_builder.dart';
