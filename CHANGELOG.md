@@ -97,3 +97,9 @@
 * `Store#subscribe` can only be cancelled by returned `Unsubscribe` function
 * Add `projectToListenable` and `projectToStream`
 * Remove `observeStore`
+
+## [0.8.0]
+
+* Apply enhancers from right to left like Redux
+* Update `projectToStream` interface to use a curry style
+* Remove `projectToListenable`
