@@ -5,7 +5,7 @@ import 'package:flock/flock.dart';
 Stream<P> Function(Store<E>) projectToStream<P, E>(Projector<P, E> projector) {
   return (Store<E> store) {
     var refCount = 0;
-    var latestProjection = store.project(projector);
+    P latestProjection = null;
 
     final controller = StreamController<P>();
 
