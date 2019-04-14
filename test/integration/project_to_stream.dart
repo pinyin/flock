@@ -7,7 +7,7 @@ void main() {
   group('project to stream', () {
     test('should return value iff projection is updated', () async {
       final store = createStore<MathEvent>();
-      final sum$ = projectToStream(store, sum);
+      final sum$ = projectToStream(sum)(store);
       final results = <int>[];
       sum$.listen(results.add);
       store.publish(Plus(1));
