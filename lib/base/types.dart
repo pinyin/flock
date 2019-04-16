@@ -3,11 +3,9 @@
 import 'package:flutter/foundation.dart';
 
 /// An [Store] records all events happened in app and acts as the single source of truth.
-abstract class Store<E> implements Listenable {
+abstract class Store<E> implements Listenable, Projectable<E> {
   void publish(E event);
   Unsubscribe subscribe(Subscriber subscriber);
-
-  P project<P>(Projector<P, E> projector);
 }
 
 /// [Store] interface for store enhancers.
@@ -17,6 +15,10 @@ abstract class StoreForEnhancer<E> extends Store<E> {
   List<E> get events;
 
   void replaceEvents(List<E> events, [int cursor]);
+}
+
+abstract class Projectable<E> {
+  P project<P>(Projector<P, E> projector);
 }
 
 /// [Store.publish] interface
@@ -37,4 +39,4 @@ typedef StoreEnhancer<E> = StoreCreator<E> Function(StoreCreator<E> inner);
 
 /// A [Projector] calculates view derived from events.
 /// [prev] is nullable
-typedef Projector<P, E> = P Function(P prev, List<E> event);
+typedef Projector<P, E> = P Function(P prev, List<E> event, Projectable<E> projectable);

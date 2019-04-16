@@ -103,3 +103,5 @@
 * Apply enhancers from right to left like Redux
 * Update `projectToStream` interface to use a curry style
 * Remove `projectToListenable`
+* Extract `Projectable` type
+* `Projector` now accept `Projectable` as the third parameter

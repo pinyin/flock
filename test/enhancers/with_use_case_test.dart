@@ -20,11 +20,11 @@ void main() {
   });
 }
 
-Stream<MathEvent> add1When3(Stream<MathEvent> events,
-    P Function<P>(Projector<P, MathEvent> projector) project) async* {
+Stream<MathEvent> add1When3(
+    Stream<MathEvent> events, Projectable<MathEvent> store) async* {
   await for (final event in events) {
     yield event;
-    if (project(sum) == 3) {
+    if (store.project(sum) == 3) {
       yield Plus(1);
     }
   }

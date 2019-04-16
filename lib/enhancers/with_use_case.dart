@@ -4,7 +4,7 @@ import 'package:flock/base/types.dart';
 import 'package:flock/flock.dart';
 
 typedef UseCase<E> = Stream<E> Function(
-    Stream<E> events, P Function<P>(Projector<P, E> projector) project);
+    Stream<E> events, Projectable<E> project);
 
 StoreEnhancer<E> withUseCase<E>(UseCase<E> useCase) {
   return (StoreCreator<E> createStore) => (List<E> prepublish) =>
@@ -47,7 +47,7 @@ class _StoreWithUseCase<E> extends StoreForEnhancer<E> {
     if (_subscription is StreamSubscription<E>) _subscription.cancel();
     _subscription = _incoming.stream
         .transform(
-            StreamTransformer.fromBind((stream) => _useCase(stream, project)))
+            StreamTransformer.fromBind((stream) => _useCase(stream, this)))
         .listen(_inner.publish);
   }
 

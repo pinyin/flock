@@ -41,9 +41,9 @@ void main() {
       final Store<MathEvent> s = createStore<MathEvent>([]);
       var projectCount = 0;
       final Projector<int, MathEvent> projector =
-          (prev, events) => projectCount++;
+          (prev, events, _) => projectCount++;
       final Projector<int, MathEvent> projector2 =
-          (prev, events) => projectCount++;
+          (prev, events, _) => projectCount++;
       s.publish(Minus('1'));
       s.publish(Minus('2'));
       s.publish(Plus(3));
@@ -64,7 +64,7 @@ void main() {
       final Store<MathEvent> s = createStore<MathEvent>([]);
       var projectCount = 0;
       final Projector<int, MathEvent> projector =
-          (prev, events) => projectCount++;
+          (prev, events, _) => projectCount++;
       s.publish(Minus('1'));
       s.publish(Minus('2'));
       s.publish(Plus(3));

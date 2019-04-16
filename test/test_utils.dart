@@ -1,3 +1,5 @@
+import 'package:flock/flock.dart';
+
 class MathEvent {}
 
 class Minus extends MathEvent {
@@ -18,7 +20,7 @@ class Equals extends MathEvent {
   final int v;
 }
 
-int sum(int prev, List<MathEvent> events) {
+final Projector<int, MathEvent> sum = (prev, events, _) {
   return events.fold<int>(prev is int ? prev : 0, (int next, MathEvent event) {
     if (event is Plus)
       next += event.v;
@@ -29,4 +31,4 @@ int sum(int prev, List<MathEvent> events) {
     }
     return next;
   });
-}
+};
