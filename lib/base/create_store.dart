@@ -24,6 +24,7 @@ class _EventStoreImpl<E> implements StoreForEnhancer<E> {
     final prev = isCacheReusable
         ? _stateCache[projector]
         : CacheItem(_cursor, projector(null, _events, this));
+    if (isCacheReusable && prev.cursor == cursor) return prev.state as P;
     P nextState = prev.state as P;
     if (prev.cursor < _cursor)
       nextState = projector(nextState, _events.sublist(prev.cursor, _cursor),
