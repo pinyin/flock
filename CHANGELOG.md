@@ -105,3 +105,4 @@
 * Remove `projectToListenable`
 * Extract `Projectable` type
 * `Projector` now accept `Projectable` as the third parameter
+* Performance improvement

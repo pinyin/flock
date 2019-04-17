@@ -1,3 +1,6 @@
+import 'dart:collection';
+import 'dart:core';
+
 import 'package:flock/base/types.dart';
 
 /// Create a Flock [Store].
@@ -27,8 +30,7 @@ class _EventStoreImpl<E> implements StoreForEnhancer<E> {
     if (isCacheReusable && prev.cursor == cursor) return prev.state as P;
     P nextState = prev.state as P;
     if (prev.cursor < _cursor)
-      nextState = projector(nextState, _events.sublist(prev.cursor, _cursor),
-          this); // TODO cache sublist?
+      nextState = projector(nextState, ListTail(_events, prev.cursor), this);
     _stateCache[projector] = CacheItem(_cursor, nextState);
     return nextState;
   }
@@ -89,4 +91,29 @@ class CacheItem {
   final dynamic state;
 
   CacheItem(this.cursor, this.state);
+}
+
+class ListTail<T> extends ListMixin<T> {
+  @override
+  int get length => parent.length - since;
+
+  @override
+  void set length(int newLength) {
+    throw 'Length of ListSegment cannot be modified.';
+  }
+
+  ListTail(this.parent, this.since);
+
+  @override
+  T operator [](int index) {
+    return parent[index + since];
+  }
+
+  @override
+  void operator []=(int index, T value) {
+    throw 'Content of ListSegment cannot be modified.';
+  }
+
+  final List<T> parent;
+  final int since;
 }
