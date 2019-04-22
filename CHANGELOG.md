@@ -95,14 +95,9 @@
 * Make `Store` a `Listenable`
 * Remove unnecessary dependency
 * `Store#subscribe` can only be cancelled by returned `Unsubscribe` function
-* Add `projectToListenable` and `projectToStream`
+* Add `projectToStream`
 * Remove `observeStore`
-
-## [0.8.0]
-
 * Apply enhancers from right to left like Redux
-* Update `projectToStream` interface to use a curry style
-* Remove `projectToListenable`
 * Extract `Projectable` type
 * `Projector` now accept `Projectable` as the third parameter
-* Performance improvement
+* Improve performance
