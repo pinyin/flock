@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:core';
 
+import 'package:collection/collection.dart';
 import 'package:flock/base/types.dart';
 
 /// Create a Flock [Store].
@@ -15,7 +16,7 @@ StoreForEnhancer<E> createStore<E>(
 class _EventStoreImpl<E> implements StoreForEnhancer<E> {
   _EventStoreImpl(List<E> prepublish) {
     assert(prepublish is List<E>);
-    this._events = List.from(prepublish);
+    this._events = QueueList.from(prepublish);
     _cursor = this._events.length;
   }
 
@@ -99,7 +100,7 @@ class ListTail<T> extends ListMixin<T> {
 
   @override
   void set length(int newLength) {
-    throw 'Length of ListSegment cannot be modified.';
+    throw 'Length cannot be modified.';
   }
 
   ListTail(this.parent, this.since);
@@ -111,7 +112,7 @@ class ListTail<T> extends ListMixin<T> {
 
   @override
   void operator []=(int index, T value) {
-    throw 'Content of ListSegment cannot be modified.';
+    throw 'Content cannot be modified.';
   }
 
   final List<T> parent;
