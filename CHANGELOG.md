@@ -101,3 +101,4 @@
 * Extract `Projectable` type
 * `Projector` now accept `Projectable` as the third parameter
 * Improve performance
+* Rename `withUseCase` to `asyncPublish`

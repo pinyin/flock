@@ -8,7 +8,7 @@ import '../test_utils.dart';
 void main() {
   group('withUseCase', () {
     test('should be able to transform events', () async {
-      final store = createStore<MathEvent>([], [withUseCase(add1When3)]);
+      final store = createStore<MathEvent>([], [asyncPublish(add1When3)]);
       store.publish(Plus(1));
       store.publish(Plus(1));
       await Future(() {});
