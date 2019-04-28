@@ -102,3 +102,4 @@
 * `Projector` now accept `Projectable` as the third parameter
 * Improve performance
 * Rename `withUseCase` to `asyncPublish`
+* Make `publish` return published event.

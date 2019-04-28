@@ -25,8 +25,9 @@ class _AsyncPublishStore<E> extends StoreProxyBase<E> {
   }
 
   @override
-  void publish(E event) {
+  E publish(E event) {
     _incoming.add(event);
+    return event;
   }
 
   @override

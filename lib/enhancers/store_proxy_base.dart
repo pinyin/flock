@@ -23,8 +23,9 @@ abstract class StoreProxyBase<E> extends StoreForEnhancer<E> {
   }
 
   @override
-  void publish(E event) {
+  E publish(E event) {
     inner.publish(event);
+    return event;
   }
 
   @override

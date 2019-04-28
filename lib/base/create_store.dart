@@ -37,11 +37,12 @@ class _EventStoreImpl<E> implements StoreForEnhancer<E> {
   }
 
   @override
-  void publish(E event) {
+  E publish(E event) {
     assert(event is E);
     _events.add(event);
     _cursor++;
     _listeners.forEach((listener) => listener());
+    return event;
   }
 
   @override
