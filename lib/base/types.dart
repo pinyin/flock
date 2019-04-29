@@ -1,9 +1,7 @@
 // TODO separate types into different files
 
-import 'package:flutter/foundation.dart';
-
 /// An [Store] records all events happened in app and acts as the single source of truth.
-abstract class Store<E> implements Listenable, Projectable<E> {
+abstract class Store<E> implements Projectable<E> {
   E publish(E event);
   Unsubscribe subscribe(Subscriber subscriber);
 }
@@ -11,9 +9,7 @@ abstract class Store<E> implements Listenable, Projectable<E> {
 /// [Store] interface for store enhancers.
 abstract class StoreForEnhancer<E> extends Store<E> {
   int get cursor;
-
   List<E> get events;
-
   void replaceEvents(List<E> events, [int cursor]);
 }
 

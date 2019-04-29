@@ -13,14 +13,16 @@ Stream<P> Function(Store<E>) projectToStream<P, E>(Projector<P, E> projector) {
       controller.add(store.project(projector));
     }
 
+    Unsubscribe unsubscribe;
+
     controller.onListen = () {
       refCount++;
-      if (refCount == 1) store.addListener(emit);
+      if (refCount == 1) unsubscribe = store.subscribe(emit);
     };
 
     controller.onCancel = () {
       refCount--;
-      if (refCount == 0) store.removeListener(emit);
+      if (refCount == 0) unsubscribe();
     };
 
     return controller.stream;

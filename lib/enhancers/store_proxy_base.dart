@@ -7,11 +7,6 @@ abstract class StoreProxyBase<E> extends StoreForEnhancer<E> {
   StoreProxyBase(this.inner);
 
   @override
-  void addListener(listener) {
-    inner.addListener(listener);
-  }
-
-  @override
   int get cursor => inner.cursor;
 
   @override
@@ -26,11 +21,6 @@ abstract class StoreProxyBase<E> extends StoreForEnhancer<E> {
   E publish(E event) {
     inner.publish(event);
     return event;
-  }
-
-  @override
-  void removeListener(listener) {
-    inner.removeListener(listener);
   }
 
   @override

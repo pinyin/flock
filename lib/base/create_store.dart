@@ -76,16 +76,6 @@ class _EventStoreImpl<E> implements StoreForEnhancer<E> {
   int _cursor;
   final _listeners = Set<Subscriber>();
   var _stateCache = Expando<CacheItem>();
-
-  @override
-  void addListener(listener) {
-    _listeners.add(listener);
-  }
-
-  @override
-  void removeListener(listener) {
-    _listeners.remove(listener);
-  }
 }
 
 class CacheItem {

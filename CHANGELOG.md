@@ -92,7 +92,7 @@
 
 ## [0.7.0]
 
-* Make `Store` a `Listenable`
+* Improve performance
 * Remove unnecessary dependency
 * `Store#subscribe` can only be cancelled by returned `Unsubscribe` function
 * Add `projectToStream`
@@ -100,6 +100,5 @@
 * Apply enhancers from right to left like Redux
 * Extract `Projectable` type
 * `Projector` now accept `Projectable` as the third parameter
-* Improve performance
 * Rename `withUseCase` to `asyncPublish`
 * Make `publish` return published event.
