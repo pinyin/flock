@@ -5,7 +5,7 @@ import '../test_utils.dart';
 
 void main() {
   group('project to stream', () {
-    test('should return value iff projection is updated', () async {
+    test('should return value', () async {
       final store = createStore<MathEvent>();
       final sum$ = projectToStream(sum)(store);
       final results = <int>[];
