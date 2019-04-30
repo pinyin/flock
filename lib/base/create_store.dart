@@ -2,7 +2,8 @@ import 'dart:collection';
 import 'dart:core';
 
 import 'package:collection/collection.dart';
-import 'package:flock/base/types.dart';
+
+import 'types.dart';
 
 /// Create a Flock [Store].
 StoreForEnhancer<E> createStore<E>(

@@ -1,4 +1,3 @@
-import 'package:flock/base/types.dart';
 import 'package:flock/flock.dart';
 
 abstract class StoreProxyBase<E> extends StoreForEnhancer<E> {

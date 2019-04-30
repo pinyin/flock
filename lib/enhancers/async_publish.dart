@@ -1,26 +1,25 @@
 import 'dart:async';
 
-import 'package:flock/base/types.dart';
 import 'package:flock/flock.dart';
 
 typedef AsyncPublishFilter<E> = Stream<E> Function(
     Stream<E> events, Projectable<E> project);
 
 StoreEnhancer<E> asyncPublish<E>([AsyncPublishFilter<E> filter]) {
-  return (StoreCreator<E> createStore) =>
-      (List<E> prepublish) => _AsyncPublishStore(
-            createStore(prepublish),
-            filter ??
-                (Stream<E> events, Projectable<E> project) async* {
-                  await for (final e in events) {
-                    yield e;
-                  }
-                },
-          );
+  return (StoreCreator<E> createStore) => (List<E> prepublish) => _Proxy(
+        createStore(prepublish),
+        filter ?? _emitEveryEvent,
+      );
 }
 
-class _AsyncPublishStore<E> extends StoreProxyBase<E> {
-  _AsyncPublishStore(this._inner, this._filter) : super(_inner) {
+Stream<E> _emitEveryEvent<E>(Stream<E> events, Projectable<E> store) async* {
+  await for (final e in events) {
+    yield e;
+  }
+}
+
+class _Proxy<E> extends StoreProxyBase<E> {
+  _Proxy(this._inner, this._filter) : super(_inner) {
     _resubscribe();
   }
 
