@@ -100,6 +100,5 @@
 * Apply enhancers from right to left like Redux
 * Extract `Projectable` type
 * `Projector` now accept `Projectable` as the third parameter
-* Rename `withUseCase` to `asyncPublish`
 * Make `publish` return published event.
 * Add `batchSubscribe` and `printEvents` enhancers

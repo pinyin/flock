@@ -2,49 +2,45 @@ import 'dart:async';
 
 import 'package:flock/flock.dart';
 
-typedef AsyncPublishFilter<E> = Stream<E> Function(
+typedef UseCase<E> = Stream<E> Function(
     Stream<E> events, Projectable<E> project);
 
-StoreEnhancer<E> asyncPublish<E>([AsyncPublishFilter<E> filter]) {
+StoreEnhancer<E> withUseCase<E>([UseCase<E> useCase]) {
   return (StoreCreator<E> createStore) => (List<E> prepublish) => _Proxy(
         createStore(prepublish),
-        filter ?? _emitEveryEvent,
+        useCase ?? _emptyUseCase,
       );
 }
 
-Stream<E> _emitEveryEvent<E>(Stream<E> events, Projectable<E> store) async* {
-  await for (final e in events) {
-    yield e;
-  }
-}
+Stream<E> _emptyUseCase<E>(Stream<E> events, Projectable<E> store) async* {}
 
 class _Proxy<E> extends StoreProxyBase<E> {
-  _Proxy(this._inner, this._filter) : super(_inner) {
+  _Proxy(StoreForEnhancer<E> inner, this.useCase) : super(inner) {
     _resubscribe();
   }
 
   @override
   E publish(E event) {
     _incoming.add(event);
-    return event;
+    return inner.publish(event);
   }
 
   @override
   void replaceEvents(List<E> events, [int cursor]) {
-    _inner.replaceEvents(events, cursor);
+    inner.replaceEvents(events, cursor);
     _resubscribe();
   }
+
+  StreamSubscription<E> _subscription;
 
   void _resubscribe() {
     if (_subscription is StreamSubscription<E>) _subscription.cancel();
     _subscription = _incoming.stream
         .transform(
-            StreamTransformer.fromBind((stream) => _filter(stream, this)))
-        .listen(_inner.publish);
+            StreamTransformer.fromBind((stream) => useCase(stream, this)))
+        .listen(inner.publish);
   }
 
   final _incoming = StreamController<E>();
-  StreamSubscription<E> _subscription;
-  StoreForEnhancer<E> _inner;
-  AsyncPublishFilter<E> _filter;
+  final UseCase<E> useCase;
 }
