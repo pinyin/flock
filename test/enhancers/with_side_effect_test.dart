@@ -6,9 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_utils.dart';
 
 void main() {
-  group('withUseCase', () {
+  group('withSideEffect', () {
     test('should be able to transform events', () async {
-      final store = createStore<MathEvent>([], [withUseCase(add1When3)]);
+      final store = createStore<MathEvent>([], [withSideEffect(add1When3)]);
       store.publish(Plus(1));
       store.publish(Plus(1));
       await Future(() {});

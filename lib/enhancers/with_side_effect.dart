@@ -2,20 +2,20 @@ import 'dart:async';
 
 import 'package:flock/flock.dart';
 
-typedef UseCase<E> = Stream<E> Function(
+typedef SideEffect<E> = Stream<E> Function(
     Stream<E> events, Projectable<E> project);
 
-StoreEnhancer<E> withUseCase<E>(UseCase<E> useCase) {
+StoreEnhancer<E> withSideEffect<E>(SideEffect<E> sideEffect) {
   return (StoreCreator<E> createStore) => (List<E> prepublish) => _Proxy(
         createStore(prepublish),
-        useCase ?? _emptyUseCase,
+        sideEffect ?? _emptyEffect,
       );
 }
 
-Stream<E> _emptyUseCase<E>(Stream<E> events, Projectable<E> store) async* {}
+Stream<E> _emptyEffect<E>(Stream<E> events, Projectable<E> store) async* {}
 
 class _Proxy<E> extends StoreProxyBase<E> {
-  _Proxy(StoreForEnhancer<E> inner, this.useCase) : super(inner) {
+  _Proxy(StoreForEnhancer<E> inner, this.sideEffect) : super(inner) {
     _resubscribe();
   }
 
@@ -37,10 +37,10 @@ class _Proxy<E> extends StoreProxyBase<E> {
     if (_subscription is StreamSubscription<E>) _subscription.cancel();
     _subscription = _incoming.stream
         .transform(
-            StreamTransformer.fromBind((stream) => useCase(stream, this)))
+            StreamTransformer.fromBind((stream) => sideEffect(stream, this)))
         .listen(publish);
   }
 
   final _incoming = StreamController<E>();
-  final UseCase<E> useCase;
+  final SideEffect<E> sideEffect;
 }

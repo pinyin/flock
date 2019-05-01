@@ -102,3 +102,4 @@
 * `Projector` now accept `Projectable` as the third parameter
 * Make `publish` return published event.
 * Add `batchSubscribe` and `printEvents` enhancers
+* Rename `withUseCase` to `withSideEffect`
