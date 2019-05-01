@@ -5,7 +5,7 @@ import 'package:flock/flock.dart';
 typedef UseCase<E> = Stream<E> Function(
     Stream<E> events, Projectable<E> project);
 
-StoreEnhancer<E> withUseCase<E>([UseCase<E> useCase]) {
+StoreEnhancer<E> withUseCase<E>(UseCase<E> useCase) {
   return (StoreCreator<E> createStore) => (List<E> prepublish) => _Proxy(
         createStore(prepublish),
         useCase ?? _emptyUseCase,
@@ -38,7 +38,7 @@ class _Proxy<E> extends StoreProxyBase<E> {
     _subscription = _incoming.stream
         .transform(
             StreamTransformer.fromBind((stream) => useCase(stream, this)))
-        .listen(inner.publish);
+        .listen(publish);
   }
 
   final _incoming = StreamController<E>();
