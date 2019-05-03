@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:flock/flock.dart';
 
-typedef SideEffect<E> = Stream<E> Function(Stream<E> events, Store<E> store);
-
 StoreEnhancer<E> withSideEffect<E>(SideEffect<E> sideEffect) {
   return (StoreCreator<E> createStore) => (List<E> prepublish) => _Proxy(
         createStore(prepublish),
@@ -11,35 +9,36 @@ StoreEnhancer<E> withSideEffect<E>(SideEffect<E> sideEffect) {
       );
 }
 
-Stream<E> _emptyEffect<E>(Stream<E> events, Store<E> store) async* {}
+typedef SideEffect<E> = Unsubscribe Function(Stream<E> events, Store<E> store);
+
+Unsubscribe _emptyEffect<E>(Stream<E> events, Store<E> store) {
+  return () {};
+}
 
 class _Proxy<E> extends StoreProxyBase<E> {
   _Proxy(StoreForEnhancer<E> inner, this.sideEffect) : super(inner) {
-    _resubscribe();
+    resubscribe();
   }
 
   @override
   E publish(E event) {
-    _incoming.add(event);
+    incoming.add(event);
     return inner.publish(event);
   }
 
   @override
   void replaceEvents(List<E> events, [int cursor]) {
     inner.replaceEvents(events, cursor);
-    _resubscribe();
+    resubscribe();
   }
 
-  StreamSubscription<E> _subscription;
-
-  void _resubscribe() {
-    if (_subscription is StreamSubscription<E>) _subscription.cancel();
-    _subscription = _incoming.stream
-        .transform(
-            StreamTransformer.fromBind((stream) => sideEffect(stream, this)))
-        .listen(publish);
+  Unsubscribe unsubscribe;
+  void resubscribe() {
+    if (unsubscribe != null) unsubscribe();
+    unsubscribe = null;
+    unsubscribe = sideEffect(incoming.stream, this);
   }
 
-  final _incoming = StreamController<E>();
+  final incoming = StreamController<E>();
   final SideEffect<E> sideEffect;
 }
