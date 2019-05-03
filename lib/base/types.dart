@@ -29,14 +29,16 @@ typedef Subscriber = void Function();
 typedef Unsubscribe = void Function();
 
 /// Store creator for middleware.
-typedef StoreCreator<E> = StoreForEnhancer<E> Function(List<E> prepublish);
+typedef StoreCreator<E extends Object> = StoreForEnhancer<E> Function(
+    List<E> prepublish);
 
 /// [StoreEnhancer] are called "store enhancer" in Redux.
 /// They wrap store and enable features like time travel.
-typedef StoreEnhancer<E> = StoreCreator<E> Function(StoreCreator<E> inner);
+typedef StoreEnhancer<E extends Object> = StoreCreator<E> Function(
+    StoreCreator<E> inner);
 
 /// A [Projector] calculates view derived from events.
 /// [prev] is nullable
 /// Hint: an object with a `call()` method will also work.
-typedef Projector<P, E> = P Function(
+typedef Projector<P extends Object, E extends Object> = P Function(
     P prev, List<E> event, Projectable<E> projectable);
