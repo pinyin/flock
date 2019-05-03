@@ -5,13 +5,13 @@ import 'package:flock/flock.dart';
 StoreEnhancer<E> withSideEffect<E>(SideEffect<E> sideEffect) {
   return (StoreCreator<E> createStore) => (List<E> prepublish) => _Proxy(
         createStore(prepublish),
-        sideEffect ?? emptyEffect,
+        sideEffect ?? emptySideEffect,
       );
 }
 
 typedef SideEffect<E> = Stream<E> Function(Stream<E> events, Store<E> store);
 
-Stream<E> emptyEffect<E>(Stream<E> events, Store<E> store) async* {}
+Stream<E> emptySideEffect<E>(Stream<E> events, Store<E> store) async* {}
 
 class _Proxy<E> extends StoreProxyBase<E> {
   _Proxy(StoreForEnhancer<E> inner, this.sideEffect) : super(inner) {
