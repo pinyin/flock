@@ -20,14 +20,11 @@ void main() {
   });
 }
 
-Unsubscribe add1When3(Stream<MathEvent> events, Store<MathEvent> store) {
-  return (() async* {
-    await for (final event in events) {
-      if (store.project(sum) == 3) {
-        yield Plus(1);
-      }
+Stream<MathEvent> add1When3(
+    Stream<MathEvent> events, Projectable<MathEvent> store) async* {
+  await for (final event in events) {
+    if (store.project(sum) == 3) {
+      yield Plus(1);
     }
-  }())
-      .listen(store.publish)
-      .cancel;
+  }
 }
