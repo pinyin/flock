@@ -104,3 +104,4 @@
 * Add `batchSubscribe` and `printEvents` enhancers
 * Rename `withUseCase` to `withSideEffect`
 * Remove generics for event on `Store`
+* Add use cases context.
