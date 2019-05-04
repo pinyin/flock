@@ -27,6 +27,11 @@ SideEffect useCaseEffects(UseCaseEffectCreator creator) {
       if (event is UseCaseEvent) {
         final useCaseMap = store.project(toUseCaseMap);
 
+        if (!useCaseMap.isRunning(event.context) && event is! UseCaseEnded) {
+          // TODO report this
+          return;
+        }
+
         if (event is UseCaseCreated) {
           final useCase = creator(event);
           if (useCase != null) {
@@ -35,11 +40,6 @@ SideEffect useCaseEffects(UseCaseEffectCreator creator) {
             outputs[event.context] = useCase(input.stream, store)
                 .listen(result.add, onError: result.addError);
           }
-        }
-
-        if (!useCaseMap.isRunning(event.context) && event is! UseCaseEnded) {
-          // TODO report this
-          return;
         }
 
         if (hasEffect(event.context)) inputs[event.context].add(event);
