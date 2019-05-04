@@ -1,7 +1,7 @@
 import 'package:flock/flock.dart';
 
-abstract class StoreProxyBase<E> extends StoreForEnhancer<E> {
-  final StoreForEnhancer<E> inner;
+abstract class StoreProxyBase extends StoreForEnhancer {
+  final StoreForEnhancer inner;
 
   StoreProxyBase(this.inner);
 
@@ -9,7 +9,7 @@ abstract class StoreProxyBase<E> extends StoreForEnhancer<E> {
   int get cursor => inner.cursor;
 
   @override
-  List<E> get events => inner.events;
+  List get events => inner.events;
 
   @override
   P project<P>(projector) {
@@ -17,13 +17,13 @@ abstract class StoreProxyBase<E> extends StoreForEnhancer<E> {
   }
 
   @override
-  E publish(E event) {
+  E publish<E>(E event) {
     inner.publish(event);
     return event;
   }
 
   @override
-  void replaceEvents(List<E> events, [int cursor]) {
+  void replaceEvents(List events, [int cursor]) {
     inner.replaceEvents(events, cursor);
   }
 

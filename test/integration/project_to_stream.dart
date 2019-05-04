@@ -6,7 +6,7 @@ import '../test_utils.dart';
 void main() {
   group('project to stream', () {
     test('should return value', () async {
-      final store = createStore<MathEvent>();
+      final store = createStore();
       final sum$ = projectToStream(sum)(store);
       final results = <int>[];
       sum$.listen(results.add);

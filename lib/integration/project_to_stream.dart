@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flock/flock.dart';
 
-Stream<P> Function(Store<E>) projectToStream<P, E>(Projector<P, E> projector) {
-  return (Store<E> store) {
+Stream<P> Function(Store) projectToStream<P>(Projector<P> projector) {
+  return (Store store) {
     var refCount = 0;
 
     final controller = StreamController<P>();

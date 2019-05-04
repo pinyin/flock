@@ -1,7 +1,7 @@
 import 'package:flock/flock.dart';
 import 'package:flutter/widgets.dart';
 
-class StoreBuilder<E, P> extends StatefulWidget {
+class StoreBuilder<P> extends StatefulWidget {
   StoreBuilder(
       {Key key,
       @required this.store,
@@ -9,15 +9,15 @@ class StoreBuilder<E, P> extends StatefulWidget {
       @required this.builder})
       : super(key: key) {}
 
-  final Store<E> store;
-  final Projector<P, E> projector;
+  final Store store;
+  final Projector<P> projector;
   final Widget Function(BuildContext context, P projection) builder;
 
   @override
-  _StoreBuilderState<E, P> createState() => _StoreBuilderState<E, P>();
+  _StoreBuilderState<P> createState() => _StoreBuilderState<P>();
 }
 
-class _StoreBuilderState<E, P> extends State<StoreBuilder<E, P>> {
+class _StoreBuilderState<P> extends State<StoreBuilder<P>> {
   @override
   void initState() {
     super.initState();
@@ -29,7 +29,7 @@ class _StoreBuilderState<E, P> extends State<StoreBuilder<E, P>> {
   P _projection;
 
   @override
-  void didUpdateWidget(StoreBuilder<E, P> oldWidget) {
+  void didUpdateWidget(StoreBuilder<P> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.store != widget.store) {
       _unsubscribe();

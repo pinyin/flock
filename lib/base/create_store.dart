@@ -6,24 +6,24 @@ import 'package:collection/collection.dart';
 import 'types.dart';
 
 /// Create a Flock [Store].
-StoreForEnhancer<E> createStore<E>(
-    [List<E> prepublish = const [],
-    List<StoreEnhancer<E>> enhancers = const []]) {
-  final createStore = enhancers.reversed.fold<StoreCreator<E>>(
-      (List<E> p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
+StoreForEnhancer createStore(
+    [List prepublish = const <Object>[],
+    List<StoreEnhancer> enhancers = const []]) {
+  final createStore = enhancers.reversed.fold<StoreCreator>(
+      (List p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
   return createStore(prepublish);
 }
 
-class _EventStoreImpl<E> implements StoreForEnhancer<E> {
-  _EventStoreImpl(List<E> prepublish) {
-    assert(prepublish is List<E>);
-    this._events = QueueList.from(prepublish);
+class _EventStoreImpl implements StoreForEnhancer {
+  _EventStoreImpl(List prepublish) {
+    assert(prepublish is List);
+    this._events = QueueList<Object>.from(prepublish);
     _cursor = this._events.length;
   }
 
   @override
-  P project<P>(Projector<P, E> projector) {
-    assert(projector is Projector<P, E>);
+  P project<P>(Projector<P> projector) {
+    assert(projector is Projector<P>);
     final isCacheReusable = _stateCache[projector] != null &&
         _stateCache[projector].cursor <= _cursor;
     final prev = isCacheReusable
@@ -32,13 +32,14 @@ class _EventStoreImpl<E> implements StoreForEnhancer<E> {
     if (isCacheReusable && prev.cursor == cursor) return prev.state as P;
     P nextState = prev.state as P;
     if (prev.cursor < _cursor)
-      nextState = projector(nextState, ListTail(_events, prev.cursor), this);
+      nextState =
+          projector(nextState, ListTail<Object>(_events, prev.cursor), this);
     _stateCache[projector] = CacheItem(_cursor, nextState);
     return nextState;
   }
 
   @override
-  E publish(E event) {
+  E publish<E>(E event) {
     assert(event is E);
     _events.add(event);
     _cursor++;
@@ -47,8 +48,8 @@ class _EventStoreImpl<E> implements StoreForEnhancer<E> {
   }
 
   @override
-  void replaceEvents(List<E> events, [int cursor]) {
-    assert(events is List<E>);
+  void replaceEvents(List events, [int cursor]) {
+    assert(events is List);
     if (_events != events) {
       _stateCache = Expando<CacheItem>();
       _events = events;
@@ -68,12 +69,12 @@ class _EventStoreImpl<E> implements StoreForEnhancer<E> {
   }
 
   @override
-  List<E> get events => _events;
+  List get events => _events;
 
   @override
   int get cursor => _cursor;
 
-  List<E> _events;
+  List _events;
   int _cursor;
   final _listeners = Set<Subscriber>();
   var _stateCache = Expando<CacheItem>();

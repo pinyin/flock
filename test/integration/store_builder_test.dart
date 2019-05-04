@@ -7,8 +7,8 @@ import '../test_utils.dart';
 void main() {
   group('StoreBuilder', () {
     testWidgets('should render child widget', (tester) async {
-      final store = createStore<MathEvent>();
-      await tester.pumpWidget(StoreBuilder<MathEvent, int>(
+      final store = createStore();
+      await tester.pumpWidget(StoreBuilder<int>(
         projector: sum,
         builder: (context, sum) => Container(
                 child: Text(
@@ -22,9 +22,9 @@ void main() {
 
     testWidgets('should update child widget iff projection updates',
         (tester) async {
-      final store = createStore<MathEvent>();
+      final store = createStore();
       var renderCount = 0;
-      await tester.pumpWidget(StoreBuilder<MathEvent, int>(
+      await tester.pumpWidget(StoreBuilder<int>(
         projector: sum,
         builder: (context, sum) {
           renderCount++;

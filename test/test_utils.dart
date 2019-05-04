@@ -20,8 +20,8 @@ class Equals extends MathEvent {
   final int v;
 }
 
-final Projector<int, MathEvent> sum = (prev, events, _) {
-  return events.fold<int>(prev is int ? prev : 0, (int next, MathEvent event) {
+final Projector<int> sum = (prev, events, _) {
+  return events.fold<int>(prev is int ? prev : 0, (int next, Object event) {
     if (event is Plus)
       next += event.v;
     else if (event is Minus)

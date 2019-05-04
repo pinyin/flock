@@ -3,8 +3,8 @@ import 'package:flutter/scheduler.dart';
 
 typedef CallSubscribers = Function(Function());
 
-StoreEnhancer<E> batchSubscribe<E>([CallSubscribers scheduleSubscribers]) {
-  return (StoreCreator<E> createStore) => (List<E> prepublish) => _Proxy(
+StoreEnhancer batchSubscribe([CallSubscribers scheduleSubscribers]) {
+  return (StoreCreator createStore) => (List prepublish) => _Proxy(
         createStore(prepublish),
         scheduleSubscribers ?? _scheduleOnFrame,
       );
@@ -16,9 +16,9 @@ void _scheduleOnFrame(void callback()) {
   });
 }
 
-class _Proxy<E> extends StoreProxyBase<E> {
+class _Proxy extends StoreProxyBase {
   CallSubscribers callSubscribers;
-  _Proxy(StoreForEnhancer<E> inner, this.callSubscribers) : super(inner) {
+  _Proxy(StoreForEnhancer inner, this.callSubscribers) : super(inner) {
     var hasScheduledUpdate = false;
     inner.subscribe(() {
       if (hasScheduledUpdate) return;

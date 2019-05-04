@@ -103,3 +103,4 @@
 * Make `publish` return published event.
 * Add `batchSubscribe` and `printEvents` enhancers
 * Rename `withUseCase` to `withSideEffect`
+* Remove generics for event on `Store`
