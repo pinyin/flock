@@ -9,7 +9,7 @@ abstract class Store implements Projectable, Publishable {
 abstract class StoreForEnhancer extends Store {
   int get cursor;
   Iterable<Object> get events;
-  void replaceEvents(covariant Iterable<Object> events, [int cursor]);
+  void replaceEvents(Iterable<Object> events, [int cursor]);
 }
 
 abstract class Projectable {

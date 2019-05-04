@@ -47,7 +47,7 @@ SideEffect useCaseEffects(UseCaseEffectCreator creator) {
           if (hasEffect(ancestor)) inputs[ancestor].add(event);
         }
 
-        bool withEndEvent(UseCaseID event) {
+        bool hasEndedEvent(UseCaseID event) {
           final events = useCaseMap.events(event);
           return events.isNotEmpty && events.last is UseCaseEnded;
         }
@@ -55,7 +55,7 @@ SideEffect useCaseEffects(UseCaseEffectCreator creator) {
         if (event is UseCaseEnded) {
           terminateEffect(event.context);
           for (final descendant in useCaseMap.descendants(event.context,
-              skipRoot: withEndEvent)) {
+              skipSubtreeWhen: hasEndedEvent)) {
             terminateEffect(descendant);
           }
         }
@@ -65,7 +65,7 @@ SideEffect useCaseEffects(UseCaseEffectCreator creator) {
     for (final event in store.project(toAllUseCaseEvents)) {
       handle(event);
     }
-    events.where((e) => e is UseCaseEvent).listen(handle);
+    events.listen(handle);
 
     return result.stream;
   };
@@ -107,7 +107,7 @@ class UseCaseMap {
         }
 
         if (event is UseCaseEnded) {
-          _ended.add(event.context);
+          _endedIndex.add(event.context);
         }
       }
     }
@@ -122,9 +122,9 @@ class UseCaseMap {
   }
 
   Iterable<UseCaseID> descendants(UseCaseID of,
-      {bool skipRoot(UseCaseID root)}) sync* {
+      {bool skipSubtreeWhen(UseCaseID root)}) sync* {
     for (final child in _toChildren[of]) {
-      if (skipRoot != null && skipRoot(child)) continue;
+      if (skipSubtreeWhen != null && skipSubtreeWhen(child)) continue;
       yield child;
       yield* descendants(child);
     }
@@ -136,13 +136,13 @@ class UseCaseMap {
 
   bool isRunning(UseCaseID of) {
     final path = <UseCaseID>[];
-    if (_ended.contains(of)) return false;
+    if (_endedIndex.contains(of)) return false;
     for (final ancestor in ancestors(of)) {
       path.add(ancestor);
-      if (_ended.contains(ancestor)) {
+      if (_endedIndex.contains(ancestor)) {
         for (final visited in path) {
           // cache result to improve future performance
-          _ended.add(visited);
+          _endedIndex.add(visited);
         }
         return false;
       }
@@ -150,7 +150,7 @@ class UseCaseMap {
     return true;
   }
 
-  final _ended = Set<UseCaseID>();
+  final _endedIndex = Set<UseCaseID>();
   final _toParent = Map<UseCaseID, UseCaseID>();
   final _toChildren = Map<UseCaseID, QueueList<UseCaseID>>()
     ..[UseCaseID.root] = QueueList();
