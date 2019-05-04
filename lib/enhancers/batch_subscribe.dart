@@ -4,7 +4,7 @@ import 'package:flutter/scheduler.dart';
 typedef CallSubscribers = Function(Function());
 
 StoreEnhancer batchSubscribe([CallSubscribers scheduleSubscribers]) {
-  return (StoreCreator createStore) => (List prepublish) => _Proxy(
+  return (StoreCreator createStore) => (Iterable prepublish) => _Proxy(
         createStore(prepublish),
         scheduleSubscribers ?? _scheduleOnFrame,
       );

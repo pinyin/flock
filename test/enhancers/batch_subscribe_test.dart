@@ -6,7 +6,7 @@ import '../test_utils.dart';
 void main() {
   group('batchSubscribe', () {
     test('should batch subscriber() calls', () async {
-      final store = createStore(<Object>[], [
+      final store = createStore(enhancers: [
         batchSubscribe((run) async {
           await Future<void>.delayed(Duration(milliseconds: 200));
           run();

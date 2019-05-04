@@ -8,8 +8,8 @@ abstract class Store implements Projectable, Publishable {
 /// [Store] interface for store enhancers.
 abstract class StoreForEnhancer extends Store {
   int get cursor;
-  List get events;
-  void replaceEvents(List events, [int cursor]);
+  Iterable<Object> get events;
+  void replaceEvents(covariant Iterable<Object> events, [int cursor]);
 }
 
 abstract class Projectable {
@@ -28,7 +28,7 @@ typedef Subscriber = void Function();
 typedef Unsubscribe = void Function();
 
 /// Store creator for middleware.
-typedef StoreCreator = StoreForEnhancer Function(List prepublish);
+typedef StoreCreator = StoreForEnhancer Function(Iterable<Object> prepublish);
 
 /// [StoreEnhancer] are called "store enhancer" in Redux.
 /// They wrap store and enable features like time travel.

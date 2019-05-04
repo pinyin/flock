@@ -7,12 +7,12 @@ import '../test_utils.dart';
 void main() {
   group('createStore', () {
     test('should return a valid EventStore', () {
-      final Store s = createStore(<Object>[]);
+      final Store s = createStore();
       expect(s, Matcher.TypeMatcher<Store>());
     });
 
     test('should dispatch event to subscriber', () {
-      final Store s = createStore(<Object>[]);
+      final Store s = createStore();
       var value = 0;
       final unsubscribe = s.subscribe(() {
         value += 1;
@@ -28,7 +28,7 @@ void main() {
     });
 
     test('should return projection', () {
-      final Store s = createStore(<Object>[]);
+      final Store s = createStore();
       s.publish(Minus('1'));
       s.publish(Minus('2'));
       s.publish(Plus(3));
@@ -38,7 +38,7 @@ void main() {
     });
 
     test('should cache state result for the same projector', () {
-      final Store s = createStore(<Object>[]);
+      final Store s = createStore();
       var projectCount = 0;
       final Projector<int> projector = (prev, events, _) => projectCount++;
       final Projector<int> projector2 = (prev, events, _) => projectCount++;
@@ -59,7 +59,7 @@ void main() {
     });
 
     test('should clean state cache after events got replaced', () {
-      final Store s = createStore(<Object>[]);
+      final Store s = createStore();
       var projectCount = 0;
       final Projector<int> projector = (prev, events, _) => projectCount++;
       s.publish(Minus('1'));

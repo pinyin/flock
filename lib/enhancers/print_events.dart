@@ -2,7 +2,7 @@ import 'package:flock/flock.dart';
 
 StoreEnhancer printEventOnPublish([String tag = '']) {
   return (StoreCreator createStore) =>
-      (List events) => _Proxy(createStore(events), tag);
+      (Iterable events) => _Proxy(createStore(events), tag);
 }
 
 class _Proxy extends StoreProxyBase {

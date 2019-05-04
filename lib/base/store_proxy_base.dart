@@ -9,7 +9,7 @@ abstract class StoreProxyBase extends StoreForEnhancer {
   int get cursor => inner.cursor;
 
   @override
-  List get events => inner.events;
+  Iterable<Object> get events => inner.events;
 
   @override
   P project<P>(projector) {
@@ -23,7 +23,7 @@ abstract class StoreProxyBase extends StoreForEnhancer {
   }
 
   @override
-  void replaceEvents(List events, [int cursor]) {
+  void replaceEvents(Iterable<Object> events, [int cursor]) {
     inner.replaceEvents(events, cursor);
   }
 

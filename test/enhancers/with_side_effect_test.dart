@@ -8,7 +8,7 @@ import '../test_utils.dart';
 void main() {
   group('withSideEffect', () {
     test('should be able to transform events', () async {
-      final store = createStore(<Object>[], [withSideEffect(add1When3)]);
+      final store = createStore(enhancers: [withSideEffect(add1When3)]);
       store.publish(Plus(1));
       store.publish(Plus(1));
       await Future(() {});

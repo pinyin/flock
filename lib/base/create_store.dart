@@ -7,16 +7,15 @@ import 'types.dart';
 
 /// Create a Flock [Store].
 StoreForEnhancer createStore(
-    [List prepublish = const <Object>[],
-    List<StoreEnhancer> enhancers = const []]) {
+    {List prepublish = const <Object>[],
+    List<StoreEnhancer> enhancers = const []}) {
   final createStore = enhancers.reversed.fold<StoreCreator>(
-      (List p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
+      (Iterable p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
   return createStore(prepublish);
 }
 
 class _EventStoreImpl implements StoreForEnhancer {
-  _EventStoreImpl(List prepublish) {
-    assert(prepublish is List);
+  _EventStoreImpl(Iterable prepublish) {
     this._events = QueueList<Object>.from(prepublish);
     _cursor = this._events.length;
   }
@@ -48,11 +47,10 @@ class _EventStoreImpl implements StoreForEnhancer {
   }
 
   @override
-  void replaceEvents(List events, [int cursor]) {
-    assert(events is List);
+  void replaceEvents(Iterable<Object> events, [int cursor]) {
     if (_events != events) {
       _stateCache = Expando<CacheItem>();
-      _events = events;
+      _events = QueueList.from(events);
     }
     if (cursor != null && cursor != _cursor) {
       _stateCache = Expando<CacheItem>();
@@ -69,12 +67,12 @@ class _EventStoreImpl implements StoreForEnhancer {
   }
 
   @override
-  List get events => _events;
+  Iterable get events => _events;
 
   @override
   int get cursor => _cursor;
 
-  List _events;
+  QueueList<Object> _events;
   int _cursor;
   final _listeners = Set<Subscriber>();
   var _stateCache = Expando<CacheItem>();

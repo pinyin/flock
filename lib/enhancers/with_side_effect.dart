@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flock/flock.dart';
 
 StoreEnhancer withSideEffect(SideEffect sideEffect) {
-  return (StoreCreator createStore) => (List<Object> prepublish) => _Proxy(
+  return (StoreCreator createStore) => (Iterable prepublish) => _Proxy(
         createStore(prepublish),
         sideEffect ?? emptySideEffect,
       );
@@ -26,7 +26,7 @@ class _Proxy extends StoreProxyBase {
   }
 
   @override
-  void replaceEvents(List events, [int cursor]) {
+  void replaceEvents(Iterable events, [int cursor]) {
     inner.replaceEvents(events, cursor);
     resubscribe();
   }
