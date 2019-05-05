@@ -34,15 +34,7 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
     final useCaseMap = project(toUseCaseMap);
 
     if (event is UseCaseCreated) {
-      final effect = createUseCaseEffect(event);
-      if (effect != null) {
-        final input = StreamController<UseCaseEvent>();
-        inputs[useCase] = input;
-        outputs[useCase] = effect(input.stream, this).listen(
-          publish,
-          onDone: () => publish(UseCaseEnded(useCase)),
-        );
-      }
+      _mayStartEffect(createUseCaseEffect(event), useCase);
     }
 
     if (_hasEffect(useCase)) inputs[useCase].add(event);
@@ -51,15 +43,16 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
     }
 
     if (event is UseCaseEnded) {
+      _mayTerminateEffect(useCase);
+
       bool hasEndEvent(UseCaseID event) {
         final events = useCaseMap.events(event);
         return events.isNotEmpty && events.last is UseCaseEnded;
       }
 
-      _maybeTerminateEffect(useCase);
       for (final descendant
           in useCaseMap.descendants(useCase, skipSubtreeWhen: hasEndEvent)) {
-        _maybeTerminateEffect(descendant);
+        _mayTerminateEffect(descendant);
       }
     }
 
@@ -70,7 +63,18 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
     return inputs.containsKey(forUseCase);
   }
 
-  void _maybeTerminateEffect(UseCaseID useCase) {
+  void _mayStartEffect(UseCaseEffect effect, UseCaseID as) {
+    if (effect != null) {
+      final input = StreamController<UseCaseEvent>();
+      inputs[as] = input;
+      outputs[as] = effect(input.stream, this).listen(
+        publish,
+        onDone: () => publish(UseCaseEnded(as)),
+      );
+    }
+  }
+
+  void _mayTerminateEffect(UseCaseID useCase) {
     if (!_hasEffect(useCase)) return;
     outputs[useCase].cancel();
     outputs.remove(useCase);
