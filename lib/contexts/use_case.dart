@@ -23,8 +23,10 @@ class _WithUseCasesEnhancer extends StoreProxyBase {
   }
 
   UseCaseEvent _publishUseCaseEvent(UseCaseEvent event) {
+    final useCase = event.context;
+
     if (!project(toUseCaseMap)
-        .isRunning(event is UseCaseCreated ? event.parent : event.context))
+        .isRunning(event is UseCaseCreated ? event.parent : useCase))
       return null;
 
     final publishResult = inner.publish(event);
@@ -32,37 +34,35 @@ class _WithUseCasesEnhancer extends StoreProxyBase {
 
     if (event is UseCaseCreated) {
       final effect = createUseCaseEffect(event);
-      if (effect != null) _createEffect(event.context, effect);
+      if (effect != null) {
+        final input = StreamController<UseCaseEvent>();
+        inputs[useCase] = input;
+        outputs[useCase] = effect(input.stream, this).listen(
+          publish,
+          onDone: () => publish(UseCaseEnded(useCase)),
+        );
+      }
     }
 
-    if (_hasEffect(event.context)) inputs[event.context].add(event);
-    for (final ancestor in useCaseMap.ancestors(event.context)) {
+    if (_hasEffect(useCase)) inputs[useCase].add(event);
+    for (final ancestor in useCaseMap.ancestors(useCase)) {
       if (_hasEffect(ancestor)) inputs[ancestor].add(event);
     }
 
     if (event is UseCaseEnded) {
-      bool isAlreadyEnded(UseCaseID event) {
+      bool hasEndEvent(UseCaseID event) {
         final events = useCaseMap.events(event);
         return events.isNotEmpty && events.last is UseCaseEnded;
       }
 
-      _maybeTerminateEffect(event.context);
-      for (final descendant in useCaseMap.descendants(event.context,
-          skipSubtreeWhen: isAlreadyEnded)) {
+      _maybeTerminateEffect(useCase);
+      for (final descendant
+          in useCaseMap.descendants(useCase, skipSubtreeWhen: hasEndEvent)) {
         _maybeTerminateEffect(descendant);
       }
     }
 
     return publishResult;
-  }
-
-  void _createEffect(UseCaseID forUseCase, UseCaseEffect effect) {
-    final input = StreamController<UseCaseEvent>();
-    inputs[forUseCase] = input;
-    outputs[forUseCase] = effect(input.stream, this).listen(
-      publish,
-      onDone: () => publish(UseCaseEnded(forUseCase)),
-    );
   }
 
   bool _hasEffect(UseCaseID forUseCase) {
@@ -168,7 +168,7 @@ class UseCaseMap {
     return true;
   }
 
-  final _endedSet = Set<UseCaseID>();
+  final _endedSet = Set<UseCaseID>(); // TODO auto cleanup
   final _toParent = Map<UseCaseID, UseCaseID>();
   final _toChildren = Map<UseCaseID, QueueList<UseCaseID>>()
     ..[UseCaseID.root] = QueueList();
