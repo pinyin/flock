@@ -7,7 +7,7 @@ void main() {
   group('onlyPublishWhen', () {
     test('should only publish value when filter returns true', () async {
       final store = createStore(enhancers: [
-        onlyPublishWhen(
+        publishFilter(
             (store) => (event) => store.project(sum) < 1 || event is Minus)
       ]);
       var emitCount = 0;

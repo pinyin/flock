@@ -101,7 +101,7 @@
 * Extract `Projectable` type
 * `Projector` now accept `Projectable` as the third parameter
 * Make `publish` return published event.
-* Add `batchSubscribe`, `onlyPublishWhen` and `printEvents` enhancers
+* Add `batchSubscribe`, `publishFilter` and `printEvents` enhancers
 * Rename `withUseCase` to `withSideEffect`
 * Remove generics for event on `Store`
 * Add use cases context.
