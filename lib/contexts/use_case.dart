@@ -23,18 +23,14 @@ class _WithUseCasesEnhancer extends StoreProxyBase {
   }
 
   UseCaseEvent _publishUseCaseEvent(UseCaseEvent event) {
-    final useCaseMap = project(toUseCaseMap);
+    if (!project(toUseCaseMap)
+        .isRunning(event is UseCaseCreated ? event.parent : event.context))
+      return null;
 
-    if (useCaseMap.isEnded(event.context)) return null;
     final publishResult = inner.publish(event);
-    _forwardUseCaseEvent(event);
-    return publishResult;
-  }
-
-  void _forwardUseCaseEvent(UseCaseEvent event) {
     final useCaseMap = project(toUseCaseMap);
 
-    if (event is UseCaseCreated && !useCaseMap.isEnded(event.parent)) {
+    if (event is UseCaseCreated) {
       final effect = createUseCaseEffect(event);
       if (effect != null) _createEffect(event.context, effect);
     }
@@ -56,6 +52,8 @@ class _WithUseCasesEnhancer extends StoreProxyBase {
         _maybeTerminateEffect(descendant);
       }
     }
+
+    return publishResult;
   }
 
   void _createEffect(UseCaseID forUseCase, UseCaseEffect effect) {
@@ -114,7 +112,7 @@ class UseCaseMap {
           _toChildren[event.parent].add(event.context);
         }
 
-        if (isEnded(event.context)) return; // TODO report this
+        assert(isRunning(event.context));
 
         _toEvents[event.context].add(event);
         for (final ancestor in ancestors(event.context)) {
@@ -149,9 +147,14 @@ class UseCaseMap {
     yield* _toEvents[of];
   }
 
-  bool isEnded(UseCaseID of) {
+  bool has(UseCaseID useCase) {
+    return _toEvents.containsKey(useCase);
+  }
+
+  bool isRunning(UseCaseID of) {
     final path = <UseCaseID>[];
-    if (_endedSet.contains(of)) return true;
+    if (!has(of)) return false;
+    if (_endedSet.contains(of)) return false;
     for (final ancestor in ancestors(of)) {
       path.add(ancestor);
       if (_endedSet.contains(ancestor)) {
@@ -159,10 +162,10 @@ class UseCaseMap {
           // cache result to improve future performance
           _endedSet.add(visited);
         }
-        return true;
+        return false;
       }
     }
-    return false;
+    return true;
   }
 
   final _endedSet = Set<UseCaseID>();
