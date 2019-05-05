@@ -1,14 +1,15 @@
 import 'package:flock/flock.dart';
 
 StoreEnhancer printEventOnPublish([String tag = '']) {
-  return (StoreCreator createStore) =>
-      (Iterable events) => _Proxy(createStore(events), tag);
+  return (StoreCreator createStore) => (Iterable events) =>
+      _PrintEventOnPublishStoreProxy(createStore(events), tag);
 }
 
-class _Proxy extends StoreProxyBase {
+class _PrintEventOnPublishStoreProxy extends StoreProxyBase {
   final String tag;
 
-  _Proxy(StoreForEnhancer inner, this.tag) : super(inner);
+  _PrintEventOnPublishStoreProxy(StoreForEnhancer inner, this.tag)
+      : super(inner);
 
   @override
   E publish<E>(E event) {

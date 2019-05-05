@@ -4,10 +4,11 @@ import 'package:flutter/scheduler.dart';
 typedef CallSubscribers = Function(Function());
 
 StoreEnhancer batchSubscribe([CallSubscribers scheduleSubscribers]) {
-  return (StoreCreator createStore) => (Iterable prepublish) => _Proxy(
-        createStore(prepublish),
-        scheduleSubscribers ?? _scheduleOnFrame,
-      );
+  return (StoreCreator createStore) =>
+      (Iterable prepublish) => _BatchSubscribeStoreProxy(
+            createStore(prepublish),
+            scheduleSubscribers ?? _scheduleOnFrame,
+          );
 }
 
 void _scheduleOnFrame(void callback()) {
@@ -16,9 +17,10 @@ void _scheduleOnFrame(void callback()) {
   });
 }
 
-class _Proxy extends StoreProxyBase {
+class _BatchSubscribeStoreProxy extends StoreProxyBase {
   CallSubscribers callSubscribers;
-  _Proxy(StoreForEnhancer inner, this.callSubscribers) : super(inner) {
+  _BatchSubscribeStoreProxy(StoreForEnhancer inner, this.callSubscribers)
+      : super(inner) {
     var hasScheduledUpdate = false;
     inner.subscribe(() {
       if (hasScheduledUpdate) return;

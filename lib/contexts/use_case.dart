@@ -7,14 +7,15 @@ import 'package:meta/meta.dart';
 
 StoreEnhancer withUseCaseEffects(UseCaseEffectCreator createUseCaseEffect) {
   return (StoreCreator createStore) => (Iterable<Object> prepublish) =>
-      _WithUseCasesEnhancer(createStore(prepublish), createUseCaseEffect);
+      _WithUseCaseEffectsStoreProxy(
+          createStore(prepublish), createUseCaseEffect);
 }
 
 typedef UseCaseEffectCreator = UseCaseEffect Function(UseCaseCreated spec);
 typedef UseCaseEffect = Stream<Object> Function(
     Stream<Object> events, Store store);
 
-class _WithUseCasesEnhancer extends StoreProxyBase {
+class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
   @override
   E publish<E>(E event) {
     return event is UseCaseEvent
@@ -82,7 +83,8 @@ class _WithUseCasesEnhancer extends StoreProxyBase {
   final outputs = Map<UseCaseID, StreamSubscription>();
   final result = StreamController<Object>();
 
-  _WithUseCasesEnhancer(StoreForEnhancer inner, this.createUseCaseEffect)
+  _WithUseCaseEffectsStoreProxy(
+      StoreForEnhancer inner, this.createUseCaseEffect)
       : super(inner);
 }
 
