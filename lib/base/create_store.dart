@@ -9,9 +9,8 @@ import 'types.dart';
 StoreForEnhancer createStore(
     {List prepublish = const <Object>[],
     List<StoreEnhancer> enhancers = const []}) {
-  final createStore = enhancers.reversed.fold<StoreCreator>(
-      (Iterable p) => _EventStoreImpl(p), (prev, curr) => curr(prev));
-  return createStore(prepublish);
+  return combineStoreEnhancers(enhancers)((Iterable p) => _EventStoreImpl(p))(
+      prepublish);
 }
 
 class _EventStoreImpl implements StoreForEnhancer {

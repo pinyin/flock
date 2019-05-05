@@ -1,5 +1,3 @@
-// TODO separate types into different files
-
 /// An [Store] records all events happened in app and acts as the single source of truth.
 abstract class Store implements Projectable, Publishable {
   Unsubscribe subscribe(Subscriber subscriber);
@@ -12,6 +10,15 @@ abstract class StoreForEnhancer extends Store {
   void replaceEvents(Iterable<Object> events, [int cursor]);
 }
 
+StoreEnhancer combineStoreEnhancers(List<StoreEnhancer> enhancers) {
+  return (StoreCreator createStore) {
+    return enhancers.reversed.fold(
+        (Iterable<Object> prepublish) => createStore(prepublish),
+        (prev, curr) => curr(prev));
+  };
+}
+
+/// [Store.project] interface
 abstract class Projectable {
   P project<P>(Projector<P> projector);
 }
