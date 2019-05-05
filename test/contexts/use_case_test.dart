@@ -7,35 +7,37 @@ void main() {
   group('use case context', () {
     // todo add more tests
     test('should automatically create use case hierachy', () async {
-      final events = <Object>[];
+      final actual = <Object>[];
       final store = createStore(enhancers: [
-        withSideEffect(useCaseEffects((_) {
-          return (e, __) async* {
-            e.listen(events.add);
+        withUseCaseEffects((_) {
+          return (events, store) async* {
+            await for (final event in events) {
+              actual.add(event);
+            }
           };
-        }))
+        }),
       ]);
       store.publish(Plus(1));
       await Future<Object>.delayed(Duration(milliseconds: 10));
-      expect(events.length, 0);
+      expect(actual.length, 0);
       final event1 = UseCaseCreated(Plus(1), UseCaseID.root);
       store.publish(event1);
       await Future<Object>.delayed(Duration(milliseconds: 10));
-      expect(events, [event1]);
+      expect(actual, [event1]);
       final event2 = UseCaseCreated(Plus(1), UseCaseID.root);
       store.publish(event2);
       await Future<Object>.delayed(Duration(milliseconds: 10));
-      expect(events, [event1, event2]);
+      expect(actual, [event1, event2]);
       final event3 = UseCaseCreated(Plus(1), event2.context);
       store.publish(event3);
       await Future<Object>.delayed(Duration(milliseconds: 10));
-      expect(events, [event1, event2, event3, event3]);
+      expect(actual, [event1, event2, event3, event3]);
       final end2Event = UseCaseEnded(event2.context);
       store.publish(end2Event);
       final event4 = UseCaseCreated(Plus(1), event2.context);
       store.publish(event4);
       await Future<Object>.delayed(Duration(milliseconds: 10));
-      expect(events, [event1, event2, event3, event3, end2Event]);
+      expect(actual, [event1, event2, event3, event3, end2Event]);
     });
   });
 }
