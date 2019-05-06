@@ -183,24 +183,16 @@ class UseCaseMap {
 }
 
 class UseCaseCreated extends UseCaseEvent {
-  final Object spec;
   final UseCaseID parent;
-  UseCaseCreated(this.spec, this.parent) : super(UseCaseID());
+  UseCaseCreated(this.parent) : super(UseCaseID());
 }
 
 class UseCaseUpdated extends UseCaseEvent {
-  final Object update;
-  UseCaseUpdated(UseCaseID context, this.update) : super(context);
-}
-
-class UseCaseInteracted extends UseCaseEvent {
-  final Object interaction;
-  UseCaseInteracted(UseCaseID context, this.interaction) : super(context);
+  UseCaseUpdated(UseCaseID context) : super(context);
 }
 
 class UseCaseEnded extends UseCaseEvent {
-  final Object cleanup;
-  UseCaseEnded(UseCaseID context, {this.cleanup}) : super(context);
+  UseCaseEnded(UseCaseID context) : super(context);
 }
 
 @immutable
