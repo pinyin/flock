@@ -199,7 +199,8 @@ class UseCaseInteracted extends UseCaseEvent {
 }
 
 class UseCaseEnded extends UseCaseEvent {
-  UseCaseEnded(UseCaseID context) : super(context);
+  final Object cleanup;
+  UseCaseEnded(UseCaseID context, {this.cleanup}) : super(context);
 }
 
 @immutable
