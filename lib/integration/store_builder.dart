@@ -47,14 +47,21 @@ class _StoreBuilderState<P> extends State<StoreBuilder<P>> {
     _unsubscribe();
   }
 
+  @override
+  void reassemble() {
+    _unsubscribe();
+    super.reassemble();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _unsubscribe = widget.store.subscribe(_scheduleUpdate);
+      _scheduleUpdate();
+    });
+  }
+
   void _scheduleUpdate() {
-    // TODO batch updates
     final curr = widget.store.project<P>(widget.projector);
-    if (_projection != curr) {
-      setState(() {
-        _projection = curr;
-      });
-    }
+    setState(() {
+      _projection = curr;
+    });
   }
 
   @override

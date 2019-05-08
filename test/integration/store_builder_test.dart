@@ -19,33 +19,5 @@ void main() {
       ));
       expect(find.text('0'), findsOneWidget);
     });
-
-    testWidgets('should update child widget iff projection updates',
-        (tester) async {
-      final store = createStore();
-      var renderCount = 0;
-      await tester.pumpWidget(StoreBuilder<int>(
-        projector: sum,
-        builder: (context, sum) {
-          renderCount++;
-          return Container(
-              child: Text(
-            sum.toString(),
-            textDirection: TextDirection.ltr,
-          ));
-        },
-        store: store,
-      ));
-      expect(find.text('0'), findsOneWidget);
-      expect(renderCount, 1);
-      store.publish(Plus(1));
-      await tester.pump();
-      expect(find.text('1'), findsOneWidget);
-      expect(renderCount, 2);
-      store.publish(Plus(0));
-      await tester.pump();
-      expect(find.text('1'), findsOneWidget);
-      expect(renderCount, 2);
-    });
   });
 }
