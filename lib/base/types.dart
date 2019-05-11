@@ -1,14 +1,12 @@
+import 'package:collection/collection.dart';
+
 /// An [Store] records all events happened in app and acts as the single source of truth.
 abstract class Store implements Projectable, Publishable {
   Unsubscribe subscribe(Subscriber subscriber);
 }
 
 /// [Store] interface for store enhancers.
-abstract class StoreForEnhancer extends Store {
-  int get cursor;
-  Iterable<Object> get events;
-  void replaceEvents(Iterable<Object> events, [int cursor]);
-}
+abstract class StoreForEnhancer extends Store implements StoreEventStorage {}
 
 /// combine multiple store enhancers into one enhancer
 StoreEnhancer combineStoreEnhancers(List<StoreEnhancer> enhancers) {
@@ -17,6 +15,12 @@ StoreEnhancer combineStoreEnhancers(List<StoreEnhancer> enhancers) {
         (Iterable<Object> prepublish) => createStore(prepublish),
         (prev, curr) => curr(prev));
   };
+}
+
+abstract class StoreEventStorage {
+  int get cursor;
+  QueueList<Object> get events;
+  void replaceEvents(QueueList<Object> events, [int cursor]);
 }
 
 /// [Store.project] interface

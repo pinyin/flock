@@ -1,5 +1,6 @@
 library flock;
 
+export 'package:collection/collection.dart' show QueueList;
 export 'package:flock/base/store_proxy_base.dart';
 
 export 'base/create_store.dart';

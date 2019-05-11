@@ -28,7 +28,7 @@ class _WithSideEffectStoreProxy extends StoreProxyBase {
   }
 
   @override
-  void replaceEvents(Iterable events, [int cursor]) {
+  void replaceEvents(QueueList<Object> events, [int cursor]) {
     inner.replaceEvents(events, cursor);
     resubscribe();
   }

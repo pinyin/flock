@@ -71,7 +71,7 @@ void main() {
       expect(projectCount, 2);
       s.project(projector);
       expect(projectCount, 2);
-      (s as StoreForEnhancer).replaceEvents(<Object>[], 0);
+      (s as StoreForEnhancer).replaceEvents(QueueList(), 0);
       s.project(projector);
       expect(projectCount, 3);
       s.project(projector);

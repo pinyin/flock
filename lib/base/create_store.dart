@@ -46,10 +46,10 @@ class _EventStoreImpl implements StoreForEnhancer {
   }
 
   @override
-  void replaceEvents(Iterable<Object> events, [int cursor]) {
+  void replaceEvents(QueueList<Object> events, [int cursor]) {
     if (_events != events) {
       _stateCache = Expando<CacheItem>();
-      _events = QueueList.from(events);
+      _events = events;
     }
     if (cursor != null && cursor != _cursor) {
       _stateCache = Expando<CacheItem>();
@@ -66,7 +66,7 @@ class _EventStoreImpl implements StoreForEnhancer {
   }
 
   @override
-  Iterable get events => _events;
+  QueueList<Object> get events => _events;
 
   @override
   int get cursor => _cursor;
