@@ -31,11 +31,11 @@ class Add extends E {
 }
 
 // Store
-final store = createStore<E>();
+final store = createStore();
 
 // In you widget:
 class BW extends StatelessWidget {
-  int sum(int prev, List<E> events) {
+  int sum(int prev, Iterable<E> events, Projectable store) {
     var result = prev ?? 0;
     for (var event in events) {
       if (event is Add)
@@ -49,7 +49,7 @@ class BW extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreBuilder( 
-      build: (BuildContext context, int p) => Text(
+      builder: (BuildContext context, int p) => Text(
             '$p',
             textDirection: TextDirection.ltr,
           ),

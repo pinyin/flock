@@ -10,6 +10,7 @@ abstract class StoreForEnhancer extends Store {
   void replaceEvents(Iterable<Object> events, [int cursor]);
 }
 
+/// combine multiple store enhancers into one enhancer
 StoreEnhancer combineStoreEnhancers(List<StoreEnhancer> enhancers) {
   return (StoreCreator createStore) {
     return enhancers.reversed.fold(

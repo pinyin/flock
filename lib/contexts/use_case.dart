@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:flock/flock.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 StoreEnhancer withUseCaseEffects(UseCaseEffectCreator createUseCaseEffect) {
   return (StoreCreator createStore) => (Iterable<Object> prepublish) =>
