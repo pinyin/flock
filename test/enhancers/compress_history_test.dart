@@ -5,11 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('onlyPublishWhen', () {
     test('should only publish value when filter returns true', () async {
-      final store = createStore(enhancers: [
+      final StoreForEnhancer store = createStore(enhancers: [
         compressHistory((store) {
           if (store.events.length > 3) store.events.removeFirst();
         }),
-      ]) as StoreForEnhancer;
+      ]);
       store.publish(1);
       store.publish(2);
       store.publish(3);
