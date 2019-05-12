@@ -45,13 +45,8 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
     if (event is UseCaseEnded) {
       _mayTerminateEffect(useCase);
 
-      bool hasEndEvent(UseCaseID event) {
-        final events = useCaseMap.events(event);
-        return events.isNotEmpty && events.last is UseCaseEnded;
-      }
-
-      for (final descendant
-          in useCaseMap.descendants(useCase, skipSubtreeWhen: hasEndEvent)) {
+      for (final descendant in useCaseMap.descendants(useCase,
+          skipSubtreeWhen: useCaseMap.hasEndEvent)) {
         _mayTerminateEffect(descendant);
       }
     }
@@ -67,7 +62,8 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
     if (effect != null) {
       final input = StreamController<UseCaseEvent>();
       inputs[as] = input;
-      outputs[as] = effect(input.stream, this).listen(
+      outputs[as] =
+          effect(input.stream, _UseCaseEffectStoreProxy(as, this)).listen(
         publish,
         onDone: () => publish(UseCaseEnded(as)),
       );
@@ -90,6 +86,24 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
   _WithUseCaseEffectsStoreProxy(
       StoreForEnhancer inner, this.createUseCaseEffect)
       : super(inner);
+}
+
+class _UseCaseEffectStoreProxy extends StoreProxyBase {
+  @override
+  E publish<E>(E event) {
+    if (event is UseCaseEvent)
+      return inner
+              .project(toUseCaseMap)
+              .ancestors(event.context)
+              .contains(scope)
+          ? inner.publish(event)
+          : null;
+    return inner.publish(event);
+  }
+
+  final UseCaseID scope;
+
+  _UseCaseEffectStoreProxy(this.scope, StoreForEnhancer inner) : super(inner);
 }
 
 Projector<QueueList<UseCaseEvent>> toAllUseCaseEvents = (prev, events, store) {
@@ -172,6 +186,23 @@ class UseCaseMap {
       }
     }
     return true;
+  }
+
+  UseCaseCreated getStartEvent(UseCaseID useCase) {
+    final result = _toEvents[useCase];
+    assert(result.first is UseCaseCreated);
+    return result.first as UseCaseCreated;
+  }
+
+  UseCaseEnded getEndEvent(UseCaseID useCase) {
+    final result = _toEvents[useCase];
+    assert(result.last is UseCaseEnded);
+    return result.last as UseCaseEnded;
+  }
+
+  bool hasEndEvent(UseCaseID useCase) {
+    final events = _toEvents[useCase];
+    return events.isNotEmpty && events.last is UseCaseEnded;
   }
 
   final _endedSet = Set<UseCaseID>(); // TODO auto cleanup
