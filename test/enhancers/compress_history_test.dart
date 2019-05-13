@@ -3,8 +3,8 @@ import 'package:flock/flock.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('onlyPublishWhen', () {
-    test('should only publish value when filter returns true', () async {
+  group('compressHistory', () {
+    test('should be able to rewrite history', () async {
       final StoreForEnhancer store = createStore(enhancers: [
         compressHistory((store) {
           if (store.events.length > 3) store.events.removeFirst();
