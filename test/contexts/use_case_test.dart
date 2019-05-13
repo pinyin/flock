@@ -7,31 +7,31 @@ void main() {
   group('use case context', () {
     // todo add more tests
     test('should automatically create use case hierachy', () async {
-      final actual = <Object>[];
+      final effectLog = <Object>[];
       final store = createStore(enhancers: [
-        withUseCaseEffects((_) {
+        withUseCaseActors((_) {
           return (events, store) async* {
             await for (final event in events) {
-              actual.add(event);
+              effectLog.add(event);
             }
           };
         }),
       ]);
       store.publish(Plus(1));
       await Future<Object>.delayed(Duration(milliseconds: 10));
-      expect(actual.length, 0);
+      expect(effectLog.length, 0);
       final create1 = UseCaseCreated(UseCaseID.root);
       store.publish(create1);
       await Future<Object>.delayed(Duration(milliseconds: 10));
-      expect(actual, [create1]);
+      expect(effectLog, [create1]);
       final create2 = UseCaseCreated(UseCaseID.root);
       store.publish(create2);
       await Future<Object>.delayed(Duration(milliseconds: 10));
-      expect(actual, [create1, create2]);
+      expect(effectLog, [create1, create2]);
       final create3 = UseCaseCreated(create2.context);
       store.publish(create3);
       await Future<Object>.delayed(Duration(milliseconds: 10));
-      expect(actual, [create1, create2, create3, create3]);
+      expect(effectLog, [create1, create2, create3, create3]);
       final end2 = UseCaseEnded(create2.context);
       store.publish(end2);
       final create4 = UseCaseCreated(create2.context);
@@ -39,7 +39,34 @@ void main() {
       final update3 = UseCaseUpdated(create2.context);
       store.publish(update3);
       await Future<Object>.delayed(Duration(milliseconds: 10));
-      expect(actual, [create1, create2, create3, create3, end2]);
+      expect(effectLog, [create1, create2, create3, create3, end2]);
+    });
+
+    test('should restart use case hierachy after cursor update', () async {
+      final effectLog = <Object>[];
+      final store = createStore(enhancers: [
+        withUseCaseActors((create) {
+          return (events, store) async* {
+            final useCaseMap = store.project(toUseCaseMap);
+            useCaseMap.events(create.context).forEach(effectLog.add);
+          };
+        }),
+      ]);
+      final create1 = UseCaseCreated(UseCaseID.root);
+      final create2 = UseCaseCreated(create1.context);
+      final end2 = UseCaseEnded(create2.context);
+
+      store.publish(create1);
+      store.publish(create2);
+      store.publish(end2);
+      await Future<Object>.delayed(Duration(milliseconds: 10));
+      expect(effectLog, [create1, create2, end2, create2, end2]);
+      effectLog.clear();
+
+      store.replaceEvents(
+          QueueList.from([create1, create2, end2]), store.cursor + 3);
+      await Future<Object>.delayed(Duration(milliseconds: 10));
+      expect(effectLog, [create1, create2, end2]);
     });
   });
 }

@@ -1,18 +1,18 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:flock/flock.dart';
 import 'package:flutter/foundation.dart';
+import 'package:uuid/uuid.dart';
 
-StoreEnhancer withUseCaseEffects(UseCaseEffectCreator createUseCaseEffect) {
+StoreEnhancer withUseCaseActors(UseCaseActorCreator createUseCaseActor) {
   return (StoreCreator createStore) => (Iterable<Object> prepublish) =>
       _WithUseCaseEffectsStoreProxy(
-          createStore(prepublish), createUseCaseEffect);
+          createStore(prepublish), createUseCaseActor);
 }
 
-typedef UseCaseEffectCreator = UseCaseEffect Function(UseCaseCreated spec);
-typedef UseCaseEffect = Stream<Object> Function(
+typedef UseCaseActorCreator = UseCaseActor Function(UseCaseCreated spec);
+typedef UseCaseActor = Stream<Object> Function(
     Stream<Object> events, Store store);
 
 class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
@@ -21,6 +21,32 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
     return event is UseCaseEvent
         ? _publishUseCaseEvent(event) as E
         : inner.publish(event);
+  }
+
+  @override
+  void replaceEvents(QueueList<Object> events, [int cursor]) {
+    final prevCursor = inner.cursor;
+
+    super.replaceEvents(events, cursor);
+
+    if (prevCursor != inner.cursor) {
+      for (final output in outputs.values) {
+        output.cancel();
+      }
+      outputs.clear();
+      for (final input in inputs.values) {
+        input.close();
+      }
+      inputs.clear();
+
+      final useCaseMap = project(toUseCaseMap);
+      for (final useCase in useCaseMap.descendants(UseCaseID.root,
+          skipSubtreeWhen: useCaseMap.isNotRunning)) {
+        final create = useCaseMap.events(useCase).first;
+        assert(create is UseCaseCreated);
+        _mayStartEffect(create as UseCaseCreated);
+      }
+    }
   }
 
   UseCaseEvent _publishUseCaseEvent(UseCaseEvent event) {
@@ -34,7 +60,7 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
     final useCaseMap = project(toUseCaseMap);
 
     if (event is UseCaseCreated) {
-      _mayStartEffect(createUseCaseEffect(event), useCase);
+      _mayStartEffect(event);
     }
 
     if (_hasEffect(useCase)) inputs[useCase].add(event);
@@ -45,8 +71,8 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
     if (event is UseCaseEnded) {
       _mayTerminateEffect(useCase);
 
-      for (final descendant in useCaseMap.descendants(useCase,
-          skipSubtreeWhen: useCaseMap.hasEndEvent)) {
+      for (final descendant
+          in useCaseMap.descendants(useCase, skipSubtreeWhen: _hasNoEffect)) {
         _mayTerminateEffect(descendant);
       }
     }
@@ -58,14 +84,21 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
     return inputs.containsKey(forUseCase);
   }
 
-  void _mayStartEffect(UseCaseEffect effect, UseCaseID as) {
-    if (effect != null) {
+  bool _hasNoEffect(UseCaseID forUseCase) {
+    return !_hasEffect(forUseCase);
+  }
+
+  void _mayStartEffect(UseCaseCreated event) {
+    final startActor = createUseCaseEffect(event);
+    final forUseCase = event.context;
+    if (startActor != null) {
       final input = StreamController<UseCaseEvent>();
-      inputs[as] = input;
-      outputs[as] =
-          effect(input.stream, _UseCaseEffectStoreProxy(as, this)).listen(
+      inputs[forUseCase] = input;
+      outputs[forUseCase] =
+          startActor(input.stream, _UseCaseEffectStoreProxy(forUseCase, this))
+              .listen(
         publish,
-        onDone: () => publish(UseCaseEnded(as)),
+        onDone: () => publish(UseCaseEnded(forUseCase)),
       );
     }
   }
@@ -78,10 +111,9 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
     inputs.remove(useCase);
   }
 
-  final UseCaseEffectCreator createUseCaseEffect;
+  final UseCaseActorCreator createUseCaseEffect;
   final inputs = Map<UseCaseID, StreamController<UseCaseEvent>>();
   final outputs = Map<UseCaseID, StreamSubscription>();
-  final result = StreamController<Object>();
 
   _WithUseCaseEffectsStoreProxy(
       StoreForEnhancer inner, this.createUseCaseEffect)
@@ -126,10 +158,12 @@ class UseCaseMap {
       if (event is UseCaseEvent) {
         if (event is UseCaseCreated) {
           assert(!_toEvents.containsKey(event.context));
+          assert(isRunning(event.parent));
           _toEvents[event.context] = QueueList();
           _toParent[event.context] = event.parent;
           _toChildren[event.context] = QueueList();
           _toChildren[event.parent].add(event.context);
+          _runningSet.add(event.context);
         }
 
         assert(isRunning(event.context));
@@ -140,7 +174,12 @@ class UseCaseMap {
         }
 
         if (event is UseCaseEnded) {
-          _endedSet.add(event.context);
+          assert(event.context != UseCaseID.root);
+          _runningSet.remove(event.context);
+          for (final descendant
+              in descendants(event.context, skipSubtreeWhen: isNotRunning)) {
+            _runningSet.remove(descendant);
+          }
         }
       }
     }
@@ -159,7 +198,7 @@ class UseCaseMap {
     for (final child in _toChildren[of]) {
       if (skipSubtreeWhen != null && skipSubtreeWhen(child)) continue;
       yield child;
-      yield* descendants(child);
+      yield* descendants(child, skipSubtreeWhen: skipSubtreeWhen);
     }
   }
 
@@ -171,21 +210,12 @@ class UseCaseMap {
     return _toEvents.containsKey(useCase);
   }
 
+  bool isNotRunning(UseCaseID of) {
+    return !_runningSet.contains(of);
+  }
+
   bool isRunning(UseCaseID of) {
-    final path = <UseCaseID>[];
-    if (!has(of)) return false;
-    if (_endedSet.contains(of)) return false;
-    for (final ancestor in ancestors(of)) {
-      path.add(ancestor);
-      if (_endedSet.contains(ancestor)) {
-        for (final visited in path) {
-          // cache result to improve future performance
-          _endedSet.add(visited);
-        }
-        return false;
-      }
-    }
-    return true;
+    return _runningSet.contains(of);
   }
 
   UseCaseCreated getStartEvent(UseCaseID useCase) {
@@ -200,12 +230,7 @@ class UseCaseMap {
     return result.last as UseCaseEnded;
   }
 
-  bool hasEndEvent(UseCaseID useCase) {
-    final events = _toEvents[useCase];
-    return events.isNotEmpty && events.last is UseCaseEnded;
-  }
-
-  final _endedSet = Set<UseCaseID>(); // TODO auto cleanup
+  final _runningSet = Set<UseCaseID>()..add(UseCaseID.root);
   final _toParent = Map<UseCaseID, UseCaseID>();
   final _toChildren = Map<UseCaseID, QueueList<UseCaseID>>()
     ..[UseCaseID.root] = QueueList();
@@ -263,7 +288,7 @@ class UseCaseID {
   @override
   int get hashCode => runtimeType.hashCode ^ id.hashCode;
 
-  UseCaseID() : id = _RandomString();
+  UseCaseID() : id = uuid.v4();
   const UseCaseID._(this.id);
   static const root = const UseCaseID._('');
 }
@@ -282,16 +307,7 @@ class UseCaseEventID {
   @override
   int get hashCode => runtimeType.hashCode ^ id.hashCode;
 
-  UseCaseEventID() : id = _RandomString();
+  UseCaseEventID() : id = uuid.v4();
 }
 
-const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-
-String _RandomString([int length = 10]) {
-  Random rnd = new Random(new DateTime.now().millisecondsSinceEpoch);
-  String result = "";
-  for (var i = 0; i < length; i++) {
-    result += chars[rnd.nextInt(chars.length)];
-  }
-  return result;
-}
+final uuid = new Uuid();
