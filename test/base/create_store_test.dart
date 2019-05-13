@@ -58,24 +58,24 @@ void main() {
       expect(projectCount, 3);
     });
 
-    test('should clean state cache after events got replaced', () {
+    test('should clean cache iff events got replaced & cursor was changed', () {
       final Store s = createStore();
-      var projectCount = 0;
-      final Projector<int> projector = (prev, events, _) => projectCount++;
+      var eventsCount = 0;
+      final Projector<int> projector =
+          (prev, events, _) => eventsCount += events.length;
       s.publish(Minus('1'));
       s.publish(Minus('2'));
       s.publish(Plus(3));
       s.project(projector);
       s.publish(Plus(4));
       s.project(projector);
-      expect(projectCount, 2);
+      expect(eventsCount, 4);
+      (s as StoreForEnhancer).replaceEvents(QueueList()..add(Plus(1)), 1);
       s.project(projector);
-      expect(projectCount, 2);
-      (s as StoreForEnhancer).replaceEvents(QueueList(), 0);
+      expect(eventsCount, 5);
+      (s as StoreForEnhancer).replaceEvents(QueueList()..add(Plus(1)), 1);
       s.project(projector);
-      expect(projectCount, 3);
-      s.project(projector);
-      expect(projectCount, 3);
+      expect(eventsCount, 5);
     });
   });
 }

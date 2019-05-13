@@ -17,6 +17,7 @@ class _EventStoreImpl implements StoreForEnhancer {
   _EventStoreImpl(Iterable prepublish) {
     this._events = QueueList<Object>.from(prepublish);
     _cursor = this._events.length;
+    _headCursor = 0;
   }
 
   @override
@@ -32,7 +33,8 @@ class _EventStoreImpl implements StoreForEnhancer {
     if (prev.cursor < _cursor)
       nextState = projector(
         nextState,
-        (_tailCache[prev.cursor] ??= ListTail<Object>(_events, prev.cursor)),
+        (_tailCache[prev.cursor] ??=
+            ListTail<Object>(_events, prev.cursor - _headCursor)),
         this,
       );
     _stateCache[projector] = CacheItem(_cursor, nextState);
@@ -51,14 +53,16 @@ class _EventStoreImpl implements StoreForEnhancer {
   @override
   void replaceEvents(QueueList<Object> events, [int cursor]) {
     if (_events != events) {
-      _stateCache = Expando<CacheItem>();
       _events = events;
+      _tailCache.clear();
     }
-    if (cursor != null && cursor != _cursor) {
+    if (_cursor != cursor) {
+      assert(cursor >= events.length);
       _stateCache = Expando<CacheItem>();
+      _headCursor = cursor - events.length;
       _cursor = cursor;
+      _tailCache.clear();
     }
-    _tailCache.clear();
   }
 
   @override
@@ -76,6 +80,7 @@ class _EventStoreImpl implements StoreForEnhancer {
   int get cursor => _cursor;
 
   QueueList<Object> _events;
+  int _headCursor;
   int _cursor;
   final _listeners = Set<Subscriber>();
   var _stateCache = Expando<CacheItem>();
