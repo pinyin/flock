@@ -30,8 +30,11 @@ class _EventStoreImpl implements StoreForEnhancer {
     if (isCacheReusable && prev.cursor == cursor) return prev.state as P;
     P nextState = prev.state as P;
     if (prev.cursor < _cursor)
-      nextState =
-          projector(nextState, ListTail<Object>(_events, prev.cursor), this);
+      nextState = projector(
+        nextState,
+        (_tailCache[prev.cursor] ??= ListTail<Object>(_events, prev.cursor)),
+        this,
+      );
     _stateCache[projector] = CacheItem(_cursor, nextState);
     return nextState;
   }
@@ -55,6 +58,7 @@ class _EventStoreImpl implements StoreForEnhancer {
       _stateCache = Expando<CacheItem>();
       _cursor = cursor;
     }
+    _tailCache.clear();
   }
 
   @override
@@ -75,6 +79,7 @@ class _EventStoreImpl implements StoreForEnhancer {
   int _cursor;
   final _listeners = Set<Subscriber>();
   var _stateCache = Expando<CacheItem>();
+  final _tailCache = Map<int, ListTail<Object>>();
 }
 
 class CacheItem {
