@@ -63,7 +63,7 @@ void main() {
       expect(effectLog, [create1, create2, end2, create2, end2]);
       effectLog.clear();
 
-      store.replaceEvents(
+      store.rewriteHistory(
           QueueList.from([create1, create2, end2]), store.cursor + 3);
       await Future<Object>.delayed(Duration(milliseconds: 10));
       expect(effectLog, [create1, create2, end2]);

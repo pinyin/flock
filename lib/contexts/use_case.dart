@@ -6,9 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 StoreEnhancer withUseCaseActors(UseCaseActorCreator createUseCaseActor) {
-  return (StoreCreator createStore) => (Iterable<Object> prepublish) =>
-      _WithUseCaseEffectsStoreProxy(
-          createStore(prepublish), createUseCaseActor);
+  return (StoreCreator createStore) =>
+      () => _WithUseCaseEffectsStoreProxy(createStore(), createUseCaseActor);
 }
 
 typedef UseCaseActorCreator = UseCaseActor Function(UseCaseCreated spec);
@@ -24,10 +23,10 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
   }
 
   @override
-  void replaceEvents(QueueList<Object> events, [int cursor]) {
+  void rewriteHistory(QueueList<Object> events, [int cursor]) {
     final prevCursor = inner.cursor;
 
-    super.replaceEvents(events, cursor);
+    super.rewriteHistory(events, cursor);
 
     if (prevCursor != inner.cursor) {
       for (final output in outputs.values) {

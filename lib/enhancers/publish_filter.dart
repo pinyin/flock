@@ -2,8 +2,8 @@ import 'package:flock/flock.dart';
 
 StoreEnhancer publishFilter(PublishFilterCreator filter) {
   return (StoreCreator createStore) {
-    return (Iterable<Object> prepublish) {
-      final inner = createStore(prepublish);
+    return () {
+      final inner = createStore();
       return _PublishFilterStoreProxy(inner, filter(inner));
     };
   };

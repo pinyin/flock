@@ -1,8 +1,8 @@
 import 'package:flock/flock.dart';
 
 StoreEnhancer printEventOnPublish([String tag = '']) {
-  return (StoreCreator createStore) => (Iterable events) =>
-      _PrintEventOnPublishStoreProxy(createStore(events), tag);
+  return (StoreCreator createStore) =>
+      () => _PrintEventOnPublishStoreProxy(createStore(), tag);
 }
 
 class _PrintEventOnPublishStoreProxy extends StoreProxyBase {

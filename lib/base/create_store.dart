@@ -6,17 +6,14 @@ import 'package:collection/collection.dart';
 import 'types.dart';
 
 /// Create a Flock [Store].
-StoreForEnhancer createStore(
-    {List prepublish = const <Object>[],
-    List<StoreEnhancer> enhancers = const []}) {
-  return combineStoreEnhancers(enhancers)((Iterable p) => _EventStoreImpl(p))(
-      prepublish);
+StoreForEnhancer createStore({List<StoreEnhancer> enhancers = const []}) {
+  return combineStoreEnhancers(enhancers)(() => _EventStoreImpl())();
 }
 
 class _EventStoreImpl implements StoreForEnhancer {
-  _EventStoreImpl(Iterable prepublish) {
-    this._events = QueueList<Object>.from(prepublish);
-    _cursor = this._events.length;
+  _EventStoreImpl() {
+    _events = QueueList();
+    _cursor = _events.length;
     _headCursor = 0;
   }
 
@@ -51,7 +48,7 @@ class _EventStoreImpl implements StoreForEnhancer {
   }
 
   @override
-  void replaceEvents(QueueList<Object> events, [int cursor]) {
+  void rewriteHistory(QueueList<Object> events, [int cursor]) {
     if (_events != events) {
       _events = events;
       _tailCache.clear();
@@ -74,7 +71,7 @@ class _EventStoreImpl implements StoreForEnhancer {
   }
 
   @override
-  QueueList<Object> get events => _events;
+  QueueList<Object> get history => _events;
 
   @override
   int get cursor => _cursor;

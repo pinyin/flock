@@ -1,8 +1,8 @@
 import 'package:flock/flock.dart';
 
 StoreEnhancer compressHistory(HistoryCompressor compressor) {
-  return (StoreCreator createStore) => (Iterable<Object> prepublish) =>
-      _CompressHistoryProxy(compressor, createStore(prepublish));
+  return (StoreCreator createStore) =>
+      () => _CompressHistoryProxy(compressor, createStore());
 }
 
 typedef HistoryCompressor = void Function(StoreEventStorage store);
@@ -11,8 +11,8 @@ class _CompressHistoryProxy extends StoreProxyBase {
   final HistoryCompressor compressor;
 
   @override
-  void replaceEvents(QueueList<Object> events, [int cursor]) {
-    super.replaceEvents(events, cursor);
+  void rewriteHistory(QueueList<Object> events, [int cursor]) {
+    super.rewriteHistory(events, cursor);
   }
 
   @override

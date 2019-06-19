@@ -70,10 +70,10 @@ void main() {
       s.publish(Plus(4));
       s.project(projector);
       expect(eventsCount, 4);
-      (s as StoreForEnhancer).replaceEvents(QueueList()..add(Plus(1)), 1);
+      (s as StoreForEnhancer).rewriteHistory(QueueList()..add(Plus(1)), 1);
       s.project(projector);
       expect(eventsCount, 5);
-      (s as StoreForEnhancer).replaceEvents(QueueList()..add(Plus(1)), 1);
+      (s as StoreForEnhancer).rewriteHistory(QueueList()..add(Plus(1)), 1);
       s.project(projector);
       expect(eventsCount, 5);
     });
