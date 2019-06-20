@@ -1,19 +1,12 @@
+import 'dart:async';
+
 import 'package:flock/flock.dart';
-import 'package:flutter/scheduler.dart';
 
 typedef CallSubscribers = Function(Function());
 
 StoreEnhancer batchSubscribe([CallSubscribers scheduleSubscribers]) {
   return (StoreCreator createStore) => () => _BatchSubscribeStoreProxy(
-        createStore(),
-        scheduleSubscribers ?? _scheduleOnFrame,
-      );
-}
-
-void _scheduleOnFrame(void callback()) {
-  SchedulerBinding.instance.scheduleFrameCallback((_) {
-    callback();
-  });
+      createStore(), scheduleSubscribers ?? scheduleMicrotask);
 }
 
 class _BatchSubscribeStoreProxy extends StoreProxyBase {

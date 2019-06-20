@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:flock/flock.dart';
-import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 StoreEnhancer withUseCaseActors(UseCaseActorCreator createUseCaseActor) {
@@ -250,7 +249,6 @@ class UseCaseEnded extends UseCaseEvent {
   UseCaseEnded(UseCaseID context) : super(context);
 }
 
-@immutable
 abstract class UseCaseEvent {
   final UseCaseID context;
   final UseCaseEventID id;
@@ -273,7 +271,6 @@ abstract class UseCaseEvent {
   UseCaseEvent(this.context) : id = UseCaseEventID();
 }
 
-@immutable
 class UseCaseID {
   final String id;
 
@@ -292,7 +289,6 @@ class UseCaseID {
   static const root = const UseCaseID._('');
 }
 
-@immutable
 class UseCaseEventID {
   final String id;
 

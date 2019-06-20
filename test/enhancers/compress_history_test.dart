@@ -1,6 +1,6 @@
 import 'package:flock/enhancers/compress_history.dart';
 import 'package:flock/flock.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('compressHistory', () {

@@ -11,4 +11,3 @@ export 'enhancers/print_events.dart';
 export 'enhancers/publish_filter.dart';
 export 'enhancers/with_side_effect.dart';
 export 'integration/project_to_stream.dart';
-export 'integration/store_builder.dart';

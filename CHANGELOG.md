@@ -105,3 +105,7 @@
 * Rename `withUseCase` to `withSideEffect`
 * Remove generics for event on `Store`
 * Add use cases context.
+
+## [0.8.0]
+
+* Remove dependency on Flutter

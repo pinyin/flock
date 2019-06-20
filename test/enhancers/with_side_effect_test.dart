@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flock/flock.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import '../test_utils.dart';
 
