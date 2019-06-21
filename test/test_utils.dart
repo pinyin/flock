@@ -22,11 +22,11 @@ class Equals extends MathEvent {
 
 final Projector<int> sum = (prev, events, _) {
   return events.fold<int>(prev is int ? prev : 0, (int next, Object event) {
-    if (event is Plus)
+    if (event is Plus) {
       next += event.v;
-    else if (event is Minus)
+    } else if (event is Minus) {
       next -= int.tryParse(event.value) ?? 0;
-    else if (event is Equals) {
+    } else if (event is Equals) {
       next = event.v;
     }
     return next;

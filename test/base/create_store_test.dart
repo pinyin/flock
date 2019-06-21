@@ -1,5 +1,5 @@
 import 'package:flock/flock.dart';
-import 'package:matcher/matcher.dart' as Matcher;
+import 'package:matcher/matcher.dart' as matcher;
 import 'package:test/test.dart';
 
 import '../test_utils.dart';
@@ -8,7 +8,7 @@ void main() {
   group('createStore', () {
     test('should return a valid EventStore', () {
       final Store s = createStore();
-      expect(s, Matcher.TypeMatcher<Store>());
+      expect(s, matcher.TypeMatcher<Store>());
     });
 
     test('should dispatch event to subscriber', () {

@@ -51,8 +51,9 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
     final useCase = event.context;
 
     if (!project(toUseCaseMap)
-        .isRunning(event is UseCaseCreated ? event.parent : useCase))
+        .isRunning(event is UseCaseCreated ? event.parent : useCase)) {
       return null;
+    }
 
     final publishResult = inner.publish(event);
     final useCaseMap = project(toUseCaseMap);
@@ -121,13 +122,14 @@ class _WithUseCaseEffectsStoreProxy extends StoreProxyBase {
 class _UseCaseEffectStoreProxy extends StoreProxyBase {
   @override
   E publish<E>(E event) {
-    if (event is UseCaseEvent)
+    if (event is UseCaseEvent) {
       return inner
               .project(toUseCaseMap)
               .ancestors(event.context)
               .contains(scope)
           ? inner.publish(event)
           : null;
+    }
     return inner.publish(event);
   }
 

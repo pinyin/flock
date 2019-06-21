@@ -27,13 +27,14 @@ class _EventStoreImpl implements StoreForEnhancer {
         : CacheItem(_cursor, projector(null, _events, this));
     if (isCacheReusable && prev.cursor == cursor) return prev.state as P;
     P nextState = prev.state as P;
-    if (prev.cursor < _cursor)
+    if (prev.cursor < _cursor) {
       nextState = projector(
         nextState,
         (_tailCache[prev.cursor] ??=
             ListTail<Object>(_events, prev.cursor - _headCursor)),
         this,
       );
+    }
     _stateCache[projector] = CacheItem(_cursor, nextState);
     return nextState;
   }
@@ -96,7 +97,7 @@ class ListTail<T> extends ListMixin<T> {
   int get length => parent.length - since;
 
   @override
-  void set length(int newLength) {
+  set length(int newLength) {
     throw 'Length cannot be modified.';
   }
 
